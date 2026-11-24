@@ -75,6 +75,12 @@ yapan telefondur. Olası nedenler:
 Eski fotoğrafları da görmek istiyorsan önce telefonda sohbeti açıp fotoğrafları indir, sonra
 **Medyayı ekle** seçeneğiyle yeniden dışa aktar.
 
+**"İletildi" etiketi ve alıntılanan (yanıtlanan) mesajlar neden görünmüyor?**
+WhatsApp bu bilgileri dışa aktarılan dosyaya yazmıyor. İletilen bir mesaj dosyada, iletenin
+yazdığı sıradan bir mesaj gibi durur. Bir mesaja alıntı yaparak yanıt verildiğinde de dosyada
+yalnızca yanıtın kendisi bulunur, hangi mesaja yanıt verildiği kaydedilmez. Bu yüzden
+görüntüleyici bunları gösteremez. Yanlış bir eşleştirme göstermemek için tahmin de yapmıyoruz.
+
 **Kendi mesajlarım neden solda görünüyor?**
 Üstteki **Ben:** listesinden adını seç.
 
