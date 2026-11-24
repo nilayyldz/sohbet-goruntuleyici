@@ -54,6 +54,8 @@ export async function runDemo(open: (f: File) => Promise<void>): Promise<void> {
       input.dispatchEvent(new Event('input'));
     }
   }
+  // Görsellerin yüklenmesini bekle (en fazla 6 sn)
+  for (let i = 0; i < 60 && document.querySelector('.img-box:not(.ready), .sticker:not(.ready)'); i++) await wait(100);
   if (q.get('lightbox')) {
     await wait(800);
     document.querySelector<HTMLElement>('.img-box')?.click();
