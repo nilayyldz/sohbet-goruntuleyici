@@ -1,7 +1,7 @@
 import './styles.css';
 import { resolveAttachments } from './media/resolve';
 import { guessMe, parseChat } from './parser/parse';
-import { applySavedTheme, ChatView } from './ui/chat-view';
+import { applySavedTheme, ChatView, toggleTheme } from './ui/chat-view';
 import { icons } from './ui/icons';
 import { loadFile } from './zip/loader';
 
@@ -13,22 +13,108 @@ let view: ChatView | null = null;
 const start = document.createElement('section');
 start.className = 'start';
 start.innerHTML = `
-  <div class="start-card">
-    <div class="start-logo">${icons.lock}</div>
-    <h1>WhatsApp Sohbet Görüntüleyici</h1>
-    <p class="lead">WhatsApp'ın <b>Sohbeti dışa aktar</b> özelliğiyle aldığın <b>.zip</b> (veya .txt) dosyasını buraya bırak.</p>
-    <label class="drop" tabindex="0">
-      <input type="file" accept=".zip,.txt,application/zip,text/plain" hidden />
-      <span class="drop-icon">${icons.upload}</span>
-      <span class="drop-text">Dosyayı sürükleyip bırak veya <u>seç</u></span>
-    </label>
-    <p class="error" role="alert" hidden></p>
-    <ul class="facts">
-      <li><b>Tamamen çevrimdışı:</b> dosya tarayıcında açılır, hiçbir sunucuya gönderilmez.</li>
-      <li>Android ve iOS, Türkçe ve İngilizce dışa aktarımları desteklenir.</li>
-      <li>Resim, video, ses, belge ve kişi kartları mesajın yerinde gösterilir.</li>
-    </ul>
-  </div>`;
+  <div class="hero-band">
+    <span class="glow g1"></span><span class="glow g2"></span>
+    <header class="start-bar">
+      <div class="brand"><span class="brand-logo">${icons.chat}</span><span class="brand-name">Sohbet<b>Görüntüleyici</b></span></div>
+      <nav class="start-nav">
+        <a href="#nasil">Nasıl çalışır?</a>
+        <a href="#gizlilik">Gizlilik</a>
+        <button class="icon-btn start-theme" type="button" aria-label="Açık/koyu tema" title="Açık/koyu tema">${icons.theme}</button>
+      </nav>
+    </header>
+    <div class="hero">
+      <div class="hero-text">
+        <span class="pill">${icons.shield}<span>%100 tarayıcında · Hiçbir şey yüklenmez</span></span>
+        <h1>WhatsApp sohbetlerin,<br /><span class="hl">olduğu gibi</span> karşında.</h1>
+        <p class="lead">Dışa aktardığın zip dosyasını bırak. Mesajlar, fotoğraflar, videolar, sesli mesajlar ve anketler saniyeler içinde, tanıdık bir görünümle açılsın.</p>
+        <label class="drop" tabindex="0">
+          <input type="file" accept=".zip,.txt,application/zip,text/plain" hidden />
+          <span class="drop-icon">${icons.upload}</span>
+          <span class="drop-copy">
+            <span class="drop-title">Zip dosyanı buraya bırak</span>
+            <span class="drop-text">veya tıklayıp seç · .zip / .txt</span>
+          </span>
+          <span class="drop-btn">Dosya seç</span>
+        </label>
+        <p class="error" role="alert" hidden></p>
+        <ul class="trust">
+          <li>${icons.lock}<span>Sunucuya yüklenmez</span></li>
+          <li>${icons.offline}<span>İnternetsiz çalışır</span></li>
+          <li>${icons.phone}<span>Android ve iPhone</span></li>
+        </ul>
+      </div>
+      <div class="phone" aria-hidden="true">
+        <div class="phone-screen">
+          <div class="pv-head"><span class="pv-back">‹</span><span class="pv-avatar">PE</span><div><b>Proje Ekibi</b><small>Ece, Kaan, Selin, Sen</small></div></div>
+          <div class="pv-body">
+            <span class="pv-chip">Bugün</span>
+            <div class="pv-msg in"><b class="pv-name c1">Ece</b>Sunumu attım, bakar mısınız? 🙌<i>14:02</i></div>
+            <div class="pv-msg in pv-doc"><span class="pv-doc-icon">PDF</span><div><b>Sunum-taslak.pdf</b><small>12 sayfa · 2,4 MB</small></div><i>14:02</i></div>
+            <div class="pv-msg in pv-photo"><span class="pv-img"></span><i>14:03</i></div>
+            <div class="pv-msg out">Harika olmuş, akşam üstünden geçeriz 👍<i>14:05 ✓✓</i></div>
+            <div class="pv-msg in pv-voice"><b class="pv-name c2">Kaan</b><span class="pv-wave"><span class="pv-play">▶</span><span class="bars"></span><small>0:14</small></span><i>14:06</i></div>
+            <div class="pv-msg out pv-poll"><b>Toplantı ne zaman?</b><span><em style="width:66%"></em>Bu akşam<small>2</small></span><span><em style="width:33%"></em>Yarın sabah<small>1</small></span><i>14:08 ✓✓</i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="start-main">
+    <section class="features" aria-label="Özellikler">
+      <article><span class="f-icon">${icons.image}</span><h2>Her şey yerli yerinde</h2><p>Fotoğraf, video, sesli mesaj, çıkartma, belge, kişi kartı ve anketler mesajın içinde görünür.</p></article>
+      <article><span class="f-icon">${icons.search}</span><h2>Bul, git, oku</h2><p>Binlerce mesaj arasında ara, istediğin tarihe atla, fotoğrafları tam ekran gez.</p></article>
+      <article><span class="f-icon">${icons.person}</span><h2>Senin bakış açın</h2><p>Kendi adını seç, mesajların sağda yeşil baloncuklarda görünsün. Koyu tema da hazır.</p></article>
+      <article><span class="f-icon">${icons.bolt}</span><h2>Hafif ve hızlı</h2><p>Tek bir dosya, kurulum yok. 60 bin mesajlık gruplar bile akıcı açılır.</p></article>
+    </section>
+
+    <section class="steps" id="nasil" aria-label="Nasıl çalışır?">
+      <p class="eyebrow">Nasıl çalışır?</p>
+      <h2>Üç adımda sohbetin karşında</h2>
+      <ol class="step-list">
+        <li>
+          <span class="step-no">1</span>
+          <h3>Sohbeti dışa aktar</h3>
+          <p><b>Android:</b> Sohbet → <b>⋮</b> → Diğer → <b>Sohbeti dışa aktar</b> → Medyayı ekle</p>
+          <p><b>iPhone:</b> Sohbet → kişi/grup adı → <b>Sohbeti Dışa Aktar</b> → Medya Ekle</p>
+        </li>
+        <li>
+          <span class="step-no">2</span>
+          <h3>Zip'i buraya bırak</h3>
+          <p>Dosyayı açmana gerek yok. Olduğu gibi sürükle ya da <b>Dosya seç</b>'e tıkla.</p>
+        </li>
+        <li>
+          <span class="step-no">3</span>
+          <h3>Oku, ara, gez</h3>
+          <p>Sohbet WhatsApp'taki gibi açılır. <b>Ben:</b> menüsünden kendi adını seç.</p>
+          <ul class="shortcuts" aria-label="Kısayollar">
+            <li class="kb-only"><span><kbd>Ctrl</kbd> + <kbd>F</kbd></span>Sohbette ara</li>
+            <li class="kb-only"><span><kbd>Enter</kbd> / <kbd>Shift</kbd> + <kbd>Enter</kbd></span>Sonraki / önceki sonuç</li>
+            <li class="kb-only"><span><kbd>←</kbd> <kbd>→</kbd></span>Fotoğraflar arasında gez</li>
+            <li class="kb-only"><span><kbd>Esc</kbd></span>Aramayı / fotoğrafı kapat</li>
+            <li class="touch-only"><span>${icons.search}</span>Sohbette ara</li>
+            <li class="touch-only"><span>${icons.image}</span>Fotoğrafa dokun, tam ekran aç</li>
+            <li><span>${icons.calendar}</span>Belirli bir tarihe git</li>
+          </ul>
+        </li>
+      </ol>
+    </section>
+
+    <section class="privacy" id="gizlilik" aria-label="Gizlilik">
+      <span class="privacy-icon">${icons.shield}</span>
+      <div>
+        <h2>Sohbetin sadece senin.</h2>
+        <p>Dosyan bu sayfadan dışarı çıkamaz: sayfa, tarayıcıya hiçbir sunucuya bağlanmama kuralıyla yüklenir. Hesap yok, reklam yok, izleme yok. Sayfayı kapattığında her şey bellekten silinir.</p>
+      </div>
+    </section>
+
+    <footer class="start-foot">
+      <span>${icons.code}Açık kaynak · MIT lisansı · Geliştiren <a href="https://github.com/nilayyldz" target="_blank" rel="noopener noreferrer">@nilayyldz</a></span>
+      <span>WhatsApp veya Meta ile bağlantılı değildir.</span>
+    </footer>
+  </div>
+`;
 app.append(start);
 
 const overlay = document.createElement('div');
@@ -40,6 +126,7 @@ document.body.append(overlay);
 const input = start.querySelector<HTMLInputElement>('input[type=file]')!;
 const drop = start.querySelector<HTMLElement>('.drop')!;
 const errorEl = start.querySelector<HTMLElement>('.error')!;
+start.querySelector('.start-theme')!.addEventListener('click', () => toggleTheme());
 
 input.addEventListener('change', () => {
   const f = input.files?.[0];
@@ -142,4 +229,6 @@ async function open(file: File): Promise<void> {
 
 if (import.meta.env.DEV) {
   (window as unknown as { __open: typeof open }).__open = open;
+  // README ekran görüntüleri için demo modu (derlemeye girmez)
+  void import('../dev/demo').then((m) => m.runDemo(open));
 }

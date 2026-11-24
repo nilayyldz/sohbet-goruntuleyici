@@ -119,6 +119,11 @@ export class ChatView {
     const back = iconButton(icons.left, 'Başka dosya aç', 'icon-btn back');
     back.addEventListener('click', () => this.onClose());
     const avatar = h('div', 'avatar', initials(title));
+    // Sohbet adına göre sabit, iki tonlu bir renk
+    let hash = 0;
+    for (const ch of title) hash = (hash * 31 + ch.codePointAt(0)!) >>> 0;
+    const hue = hash % 360;
+    avatar.style.background = `linear-gradient(135deg, hsl(${hue} 62% 58%), hsl(${(hue + 40) % 360} 60% 46%))`;
     const titles = h('div', 'titles');
     titles.append(h('div', 'title', title));
     this.subtitle = h('div', 'subtitle');
@@ -491,7 +496,7 @@ export function applySavedTheme(): void {
   }
 }
 
-function toggleTheme(): void {
+export function toggleTheme(): void {
   const root = document.documentElement;
   const current = root.dataset.theme ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   const next = current === 'dark' ? 'light' : 'dark';

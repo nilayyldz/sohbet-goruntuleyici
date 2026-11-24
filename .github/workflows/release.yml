@@ -24,6 +24,8 @@ jobs:
       - run: npm run build
       - name: CSP derlemede mevcut mu?
         run: grep -q "connect-src 'none'" dist/index.html
+      - name: Derlemede ağ çağrısı yok mu?
+        run: "! grep -q 'fetch(' dist/index.html"
       - name: Sürümü yayınla
         env:
           GH_TOKEN: ${{ github.token }}

@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Mobil görünüm (yalnızca geliştirme)</title>
+    <style>
+      /* README için iki telefon çerçevesinde mobil görünüm. Derlemeye girmez. */
+      html, body { margin: 0; height: 100%; }
+      body {
+        display: flex; align-items: center; justify-content: center; gap: 72px;
+        background:
+          radial-gradient(700px 400px at 80% 10%, rgba(37, 211, 102, 0.25), transparent 60%),
+          linear-gradient(160deg, #06281f, #0a3b2e 50%, #0b1f1a);
+      }
+      .phone {
+        padding: 12px; border-radius: 52px;
+        background: linear-gradient(145deg, #2b3a36, #0d1513);
+        box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5), 0 0 0 2px #050a09;
+      }
+      iframe { display: block; width: 390px; height: 844px; border: 0; border-radius: 40px; background: #fff; }
+    </style>
+  </head>
+  <body>
+    <div class="phone"><iframe src="/?theme=light&landing=1&demo=x"></iframe></div>
+    <div class="phone"><iframe src="/?demo=Kamp%20Ekibi&me=Selin&theme=dark&scroll=Kamp%20listesi"></iframe></div>
+  </body>
+</html>

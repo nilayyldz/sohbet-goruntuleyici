@@ -16,3 +16,9 @@ samples/
 .DS_Store
 Thumbs.db
 *.log
+
+# Ekran görüntüleri: depoya yalnızca WebP sürümleri girer
+docs/screenshots/*.png
+docs/screenshots/mobile-landing.webp
+docs/screenshots/mobile-chat.webp
+docs/screenshots/landing-dark.webp

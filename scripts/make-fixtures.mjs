@@ -18,13 +18,14 @@ function crc32(buf) {
   return (crc ^ 0xffffffff) >>> 0;
 }
 function png(w, h, painter) {
-  const raw = Buffer.alloc((w * 3 + 1) * h);
+  // RGBA (renk tipi 6); painter 3 değer döndürürse saydamlık 255 kabul edilir
+  const raw = Buffer.alloc((w * 4 + 1) * h);
   for (let y = 0; y < h; y++) {
-    raw[y * (w * 3 + 1)] = 0;
+    raw[y * (w * 4 + 1)] = 0;
     for (let x = 0; x < w; x++) {
-      const [r, g, b] = painter(x, y);
-      const o = y * (w * 3 + 1) + 1 + x * 3;
-      raw[o] = r; raw[o + 1] = g; raw[o + 2] = b;
+      const [r, g, b, a = 255] = painter(x, y);
+      const o = y * (w * 4 + 1) + 1 + x * 4;
+      raw[o] = r; raw[o + 1] = g; raw[o + 2] = b; raw[o + 3] = a;
     }
   }
   const chunk = (type, data) => {
@@ -35,20 +36,50 @@ function png(w, h, painter) {
   };
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(w, 0); ihdr.writeUInt32BE(h, 4);
-  ihdr[8] = 8; ihdr[9] = 2; ihdr[10] = 0; ihdr[11] = 0; ihdr[12] = 0;
+  ihdr[8] = 8; ihdr[9] = 6; ihdr[10] = 0; ihdr[11] = 0; ihdr[12] = 0;
   return Buffer.concat([
     Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]),
     chunk('IHDR', ihdr), chunk('IDAT', deflateSync(raw)), chunk('IEND', Buffer.alloc(0)),
   ]);
 }
-const gradient = (w, h, hue) => png(w, h, (x, y) => [
-  Math.round(120 + 120 * Math.sin(hue + x / w * 3)),
-  Math.round(90 + 140 * (y / h)),
-  Math.round(160 + 90 * Math.cos(hue + x / 40)),
-]);
+// Basit manzara: gökyüzü degradesi, güneş, iki tepe sırası ve göl. "seed" renk paletini seçer.
+const PALETTES = [
+  { sky: [[95, 170, 230], [250, 205, 150]], sun: [255, 214, 110], far: [70, 140, 110], near: [35, 100, 75], water: [80, 150, 200] },
+  { sky: [[40, 50, 110], [240, 130, 110]], sun: [255, 190, 120], far: [90, 70, 120], near: [45, 40, 80], water: [120, 90, 140] },
+  { sky: [[140, 200, 240], [225, 240, 250]], sun: [255, 240, 190], far: [120, 160, 190], near: [70, 120, 150], water: [100, 170, 210] },
+  { sky: [[250, 170, 90], [255, 225, 160]], sun: [255, 250, 220], far: [170, 110, 70], near: [110, 70, 50], water: [210, 150, 100] },
+  { sky: [[20, 30, 60], [70, 90, 150]], sun: [240, 240, 255], far: [40, 60, 90], near: [20, 30, 50], water: [50, 70, 120] },
+  { sky: [[120, 210, 200], [240, 250, 220]], sun: [255, 230, 120], far: [90, 170, 110], near: [50, 130, 80], water: [70, 180, 190] },
+];
+const mix = (a, b, t) => a.map((v, i) => Math.round(v + (b[i] - v) * t));
+const gradient = (w, h, seed) => {
+  const p = PALETTES[seed % PALETTES.length];
+  const sunX = w * (0.25 + 0.5 * ((seed * 37) % 10) / 10), sunY = h * 0.32, sunR = Math.min(w, h) * 0.09;
+  return png(w, h, (x, y) => {
+    const u = x / w, v = y / h;
+    const far = 0.55 + 0.06 * Math.sin(u * 7 + seed) + 0.04 * Math.sin(u * 17 + seed * 2);
+    const near = 0.68 + 0.08 * Math.sin(u * 4.5 + seed * 3) + 0.03 * Math.sin(u * 23);
+    if (v > 0.86) return mix(p.water, [255, 255, 255], 0.15 * Math.sin(x / 3 + y) ** 2);
+    if (v > near) return mix(p.near, [0, 0, 0], (v - near) * 0.8);
+    if (v > far) return mix(p.far, p.near, (v - far) * 2);
+    const d = Math.hypot(x - sunX, y - sunY);
+    if (d < sunR) return p.sun;
+    const sky = mix(p.sky[0], p.sky[1], v / far);
+    return d < sunR * 2.6 ? mix(p.sun, sky, (d - sunR) / (sunR * 1.6)) : sky;
+  });
+};
+// Gülen yüz çıkartması (saydam arka plan, beyaz kenarlık)
 const sticker = () => png(160, 160, (x, y) => {
   const d = Math.hypot(x - 80, y - 80);
-  return d < 70 ? [255, 200, 40] : [255, 255, 255];
+  if (d > 72) return [0, 0, 0, 0];
+  if (d > 66) return [255, 255, 255, 255];
+  const eye = Math.hypot(x - 58, y - 64) < 8 || Math.hypot(x - 102, y - 64) < 8;
+  const m = Math.hypot(x - 80, y - 78);
+  const smile = y > 84 && m > 30 && m < 38;
+  const cheek = Math.hypot(x - 46, y - 92) < 9 || Math.hypot(x - 114, y - 92) < 9;
+  if (eye || smile) return [70, 45, 20, 255];
+  if (cheek) return [255, 150, 120, 255];
+  return [255, Math.round(205 - (y - 14) * 0.35), 60, 255];
 });
 function wav(seconds = 2, freq = 440) {
   const rate = 8000, n = rate * seconds;
@@ -211,3 +242,35 @@ await save('WhatsApp Sohbeti - Zeynep.zip', {
   }
   await save('WhatsApp Sohbeti - Büyük Grup.zip', { 'Büyük Grup ile WhatsApp Sohbeti.txt': lines.join('\n'), ...files });
 }
+
+// ---- Tanıtım sohbeti (README ekran görüntüleri için, iOS TR) ---------------
+await save('WhatsApp Sohbeti - Kamp Ekibi.zip', {
+  '_chat.txt': [
+    `[18.11.2026 19:02:00] Kamp Ekibi: ${L}Mesajlar ve aramalar uçtan uca şifrelidir. WhatsApp dahil olmak üzere bu sohbetin dışında bulunan hiç kimse bunları okuyamaz ve dinleyemez.`,
+    `${L}[18.11.2026 19:02:05] Kamp Ekibi: ${L}Deniz grubu oluşturdu`,
+    `[18.11.2026 19:03:10] Deniz: Hafta sonu kamp için herkes hazır mı? 🏕️`,
+    `[18.11.2026 19:04:00] Ece: Ben varım! Çadırı ben getiririm ⛺`,
+    `[18.11.2026 19:04:40] Kaan: Ben de varım, *mangal* bende 🔥`,
+    `${L}[18.11.2026 19:06:00] Deniz: ${L}ANKET:`,
+    `Ne zaman çıkalım?`,
+    `SEÇENEK: Cuma akşam (3 oy)`,
+    `SEÇENEK: Cumartesi sabah erken (1 oy)`,
+    `[18.11.2026 19:07:30] Selin: Cuma akşam olsun, trafik olmaz 👍`,
+    `${L}[20.11.2026 21:15:00] Deniz: ${L}Kamp listesi.pdf • ${L}2 sayfa ${L}<00000010-Kamp listesi.pdf eklendi>`,
+    `[20.11.2026 21:15:40] Deniz: Listeye bakıp eksik varsa yazın 📝 @Ece fener sende mi?`,
+    `[20.11.2026 21:17:00] Ece: Evet bende, yedek pil de aldım 🔦`,
+    `${L}[21.11.2026 08:42:00] Kaan: ${L}<00000013-PHOTO-2026-11-21-08-42-00.jpg eklendi>`,
+    `${L}[21.11.2026 08:42:10] Kaan: ${L}<00000014-PHOTO-2026-11-21-08-42-10.jpg eklendi>`,
+    `[21.11.2026 08:43:00] Kaan: Sabah manzarası böyle 😍`,
+    `[21.11.2026 08:45:00] Selin: Muhteşem!! Kahve hazır mı? ☕`,
+    `${L}[21.11.2026 08:46:00] Ece: ${L}<00000017-AUDIO-2026-11-21-08-46-00.opus eklendi>`,
+    `${L}[21.11.2026 08:47:00] Deniz: ${L}<00000018-STICKER-2026-11-21-08-47-00.webp eklendi>`,
+    `[21.11.2026 20:30:00] Selin: Bir dahakine göl kenarına gidelim, rota burada: https://example.com/rota`,
+    `[21.11.2026 20:31:00] Deniz: Kesinlikle, harika bir hafta sonuydu 🙌 ${L}<Bu mesaj düzenlendi>`,
+  ].join('\n'),
+  '00000010-Kamp listesi.pdf': pdf('Kamp listesi'),
+  '00000013-PHOTO-2026-11-21-08-42-00.jpg': gradient(800, 560, 0),
+  '00000014-PHOTO-2026-11-21-08-42-10.jpg': gradient(800, 560, 3),
+  '00000017-AUDIO-2026-11-21-08-46-00.opus': wav(4, 440),
+  '00000018-STICKER-2026-11-21-08-47-00.webp': sticker(),
+});

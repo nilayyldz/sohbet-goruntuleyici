@@ -12,7 +12,8 @@
     "test:security": "vitest run tests/security.test.ts",
     "typecheck": "tsc --noEmit",
     "audit:prod": "npm audit --omit=dev",
-    "fixtures": "node scripts/make-fixtures.mjs"
+    "fixtures": "node scripts/make-fixtures.mjs",
+    "screenshots": "node scripts/screenshots.mjs"
   },
   "dependencies": {
     "jszip": "3.10.1"

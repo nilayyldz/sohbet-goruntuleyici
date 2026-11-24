@@ -33,5 +33,5 @@ export function cspPlugin(): Plugin {
 export default defineConfig({
   base: './',
   plugins: [cspPlugin(), viteSingleFile()],
-  build: { target: 'es2022' },
+  build: { target: 'es2022', modulePreload: { polyfill: false } },
 });

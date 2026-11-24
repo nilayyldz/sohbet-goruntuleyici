@@ -12,6 +12,7 @@ Uygulamayı yalnızca **kullanmak** istiyorsan [README](../README.md) yeterli.
 - [Desteklenen biçimler](#desteklenen-biçimler)
 - [Gizlilik ve güvenlik](#gizlilik-ve-güvenlik)
 - [Testler ve sahte veri (mock)](#testler-ve-sahte-veri-mock)
+- [Ekran görüntüleri ve demo modu](#ekran-görüntüleri-ve-demo-modu)
 - [Yayınlama (GitHub Pages ve Releases)](#yayınlama-github-pages-ve-releases)
 - [Katkıda bulunma](#katkıda-bulunma)
 
@@ -49,6 +50,7 @@ npm run test:watch   # değişiklikte testleri yeniden çalıştır
 npm run typecheck    # TypeScript kontrolü
 npm run build        # dist/index.html üret
 npm run fixtures     # fixtures/ altına örnek zip'ler üret
+npm run screenshots  # README ekran görüntülerini üret (dev sunucusu açıkken)
 ```
 
 Geliştirme sunucusunda CSP kapalıdır (Vite'ın anlık yenilemesi çalışsın diye). Gizlilik
@@ -181,6 +183,38 @@ mesajlar, yönetici silmesi, grup sistem mesajları, telefon numarası yazarlar,
 
 `npm run fixtures` ise tarayıcıda elle denemek için gerçek görsel, ses ve PDF içeren örnek
 zip'leri `fixtures/` klasörüne yazar. Bunlar arasında 60 bin mesajlık bir grup da var.
+
+## Ekran görüntüleri ve demo modu
+
+README'deki görüntüler `docs/screenshots/` altındadır ve tamamen **uydurma** verilerle üretilir.
+
+```bash
+npm run fixtures       # fixtures/ altına örnek zip'leri (ör. "Kamp Ekibi") üret
+npm run dev            # ayrı bir terminalde
+npm run screenshots    # Edge/Chrome'u başsız modda çalıştırıp PNG'leri alır
+```
+
+Betik, yalnızca geliştirme sunucusunda çalışan **demo modunu** (`dev/demo.ts`) kullanır.
+Örnek bir sohbeti adres çubuğundan açmak için:
+
+```
+http://localhost:5173/?demo=Kamp%20Ekibi&me=Selin&theme=dark&scroll=Kamp%20listesi
+```
+
+| Parametre | Etki |
+|---|---|
+| `demo=<ad>` | `fixtures/WhatsApp Sohbeti - <ad>.zip` dosyasını açar |
+| `me=<ad>` | "Ben" seçimini yapar |
+| `theme=light\|dark` | Temayı ayarlar |
+| `scroll=<metin>` | Bu metni içeren mesaja kaydırır |
+| `search=<metin>` | Arama çubuğunu açıp arar |
+| `lightbox=1` | İlk fotoğrafı tam ekran açar |
+| `landing=1` | Başlangıç sayfasında kalır |
+
+`dev/` klasörü derlemeye girmez. `main.ts` onu yalnızca `import.meta.env.DEV` iken yükler;
+CI, derlenmiş dosyada `fetch(` geçmediğini ayrıca kontrol eder. Mobil görünüm, başsız
+tarayıcı ~500 pikselden dar pencere açamadığı için `dev/mobile.html` içindeki iki telefon
+çerçevesinden alınır. PNG'ler depoya eklenmez; README WebP sürümlerini kullanır.
 
 ## Yayınlama (GitHub Pages ve Releases)
 
