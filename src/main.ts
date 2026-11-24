@@ -13,71 +13,80 @@ let view: ChatView | null = null;
 const start = document.createElement('section');
 start.className = 'start';
 start.innerHTML = `
-  <header class="start-bar">
-    <div class="brand"><span class="brand-logo">${icons.chat}</span><span class="brand-name">Sohbet Görüntüleyici</span></div>
-    <nav class="start-nav">
-      <a href="#nasil">Nasıl çalışır?</a>
-      <a href="#gizlilik">Gizlilik</a>
-      <button class="icon-btn start-theme" type="button" aria-label="Açık/koyu tema" title="Açık/koyu tema">${icons.theme}</button>
-    </nav>
-  </header>
-
-  <div class="start-main">
-    <section class="hero">
+  <div class="hero-band">
+    <span class="glow g1"></span><span class="glow g2"></span>
+    <header class="start-bar">
+      <div class="brand"><span class="brand-logo">${icons.chat}</span><span class="brand-name">Sohbet<b>Görüntüleyici</b></span></div>
+      <nav class="start-nav">
+        <a href="#nasil">Nasıl çalışır?</a>
+        <a href="#gizlilik">Gizlilik</a>
+        <button class="icon-btn start-theme" type="button" aria-label="Açık/koyu tema" title="Açık/koyu tema">${icons.theme}</button>
+      </nav>
+    </header>
+    <div class="hero">
       <div class="hero-text">
-        <h1>WhatsApp sohbetlerini tarayıcında oku.</h1>
-        <p class="lead">WhatsApp'tan dışa aktardığın zip dosyasını aç; mesajlar, fotoğraflar, sesli mesajlar, belgeler ve anketler telefondaki gibi görünsün.</p>
+        <span class="pill">${icons.shield}<span>%100 tarayıcında · Hiçbir şey yüklenmez</span></span>
+        <h1>WhatsApp sohbetlerin,<br /><span class="hl">olduğu gibi</span> karşında.</h1>
+        <p class="lead">Dışa aktardığın zip dosyasını bırak. Mesajlar, fotoğraflar, videolar, sesli mesajlar ve anketler saniyeler içinde, tanıdık bir görünümle açılsın.</p>
         <label class="drop" tabindex="0">
           <input type="file" accept=".zip,.txt,application/zip,text/plain" hidden />
           <span class="drop-icon">${icons.upload}</span>
-          <span class="drop-title kb-only">Zip dosyasını buraya sürükle</span>
-          <span class="drop-text kb-only">ya da</span>
+          <span class="drop-copy">
+            <span class="drop-title">Zip dosyanı buraya bırak</span>
+            <span class="drop-text">veya tıklayıp seç · .zip / .txt</span>
+          </span>
           <span class="drop-btn">Dosya seç</span>
-          <span class="drop-hint">.zip veya .txt · zip'i açmana gerek yok</span>
         </label>
         <p class="error" role="alert" hidden></p>
-        <p class="assure">${icons.lock}<span>Dosyan bilgisayarından çıkmaz, internet bağlantısı gerekmez.</span></p>
+        <ul class="trust">
+          <li>${icons.lock}<span>Sunucuya yüklenmez</span></li>
+          <li>${icons.offline}<span>İnternetsiz çalışır</span></li>
+          <li>${icons.phone}<span>Android ve iPhone</span></li>
+        </ul>
       </div>
-
-      <figure class="demo" aria-label="Örnek sohbet görünümü">
-        <div class="demo-head">
-          <span class="avatar demo-avatar">KE</span>
-          <div><b>Kamp Ekibi</b><small>Deniz, Ece, Kaan, Selin</small></div>
-          <span class="demo-tools">${icons.search}${icons.calendar}</span>
+      <div class="phone" aria-hidden="true">
+        <div class="phone-screen">
+          <div class="pv-head"><span class="pv-back">‹</span><span class="pv-avatar">PE</span><div><b>Proje Ekibi</b><small>Ece, Kaan, Selin, Sen</small></div></div>
+          <div class="pv-body">
+            <div class="day-chip-wrap"><span class="day-chip">Bugün</span></div>
+            <div class="row in first"><div class="bubble"><div class="author c1">Ece</div><div class="body"><span class="text">Sunumu attım, bakar mısınız? 🙌</span><span class="spacer"></span></div><span class="meta"><time>14:02</time></span></div></div>
+            <div class="row in"><div class="bubble has-media k-document pv-doc-bubble"><div class="media doc-card"><span class="doc-icon ext-pdf">PDF</span><div class="doc-info"><div class="doc-name">Sunum-taslak.pdf</div><div class="doc-meta">PDF · 12 sayfa</div></div></div><span class="meta"><time>14:02</time></span></div></div>
+            <div class="row in"><div class="bubble has-media k-image media-only"><div class="media img-box sized ready pv-photo-img"></div><span class="meta overlay"><time>14:03</time></span></div></div>
+            <div class="row out first"><div class="bubble"><div class="body"><span class="text">Harika olmuş, akşam üstünden geçeriz 👍</span><span class="spacer"></span></div><span class="meta"><time>14:05</time></span></div></div>
+            <div class="row in first"><div class="bubble has-poll"><div class="author c2">Kaan</div><div class="body"><div class="poll"><div class="poll-question">Toplantı ne zaman?</div><div class="poll-hint">Anket</div><ul class="poll-options"><li class="poll-option leading"><div class="poll-row"><span class="poll-circle"></span><span class="poll-label">Bu akşam</span><span class="poll-count">2</span></div><div class="poll-bar"><div class="poll-fill" style="width:67%"></div></div></li><li class="poll-option"><div class="poll-row"><span class="poll-circle"></span><span class="poll-label">Yarın sabah</span><span class="poll-count">1</span></div><div class="poll-bar"><div class="poll-fill" style="width:33%"></div></div></li></ul></div><span class="spacer"></span></div><span class="meta"><time>14:08</time></span></div></div>
+          </div>
         </div>
-        <div class="demo-body" aria-hidden="true">
-          <div class="day-chip-wrap"><span class="day-chip">Cumartesi</span></div>
-          <div class="row in first"><div class="bubble"><div class="author c1">Ece</div><div class="body"><span class="text">Sabah manzarası böyle, kahve de hazır ☕</span><span class="spacer"></span></div><span class="meta"><time>08:42</time></span></div></div>
-          <div class="row in"><div class="bubble has-media k-image media-only"><div class="media img-box sized ready demo-photo"></div><span class="meta overlay"><time>08:42</time></span></div></div>
-          <div class="row in first"><div class="bubble has-media k-document demo-doc"><div class="author c2">Kaan</div><div class="media doc-card"><span class="doc-icon ext-pdf">PDF</span><div class="doc-info"><div class="doc-name">Kamp listesi.pdf</div><div class="doc-meta">PDF · 2 sayfa</div></div></div><span class="meta"><time>09:10</time></span></div></div>
-          <div class="row out first"><div class="bubble"><div class="body"><span class="text">Fener bende, yedek pil de aldım 🔦</span><span class="spacer"></span></div><span class="meta"><time>09:12</time></span></div></div>
-          <div class="row in first"><div class="bubble has-poll"><div class="author c0">Deniz</div><div class="body"><div class="poll"><div class="poll-question">Dönüş ne zaman?</div><div class="poll-hint">Anket</div><ul class="poll-options"><li class="poll-option leading"><div class="poll-row"><span class="poll-circle"></span><span class="poll-label">Pazar öğlen</span><span class="poll-count">3</span></div><div class="poll-bar"><div class="poll-fill" style="width:75%"></div></div></li><li class="poll-option"><div class="poll-row"><span class="poll-circle"></span><span class="poll-label">Pazar akşam</span><span class="poll-count">1</span></div><div class="poll-bar"><div class="poll-fill" style="width:25%"></div></div></li></ul></div><span class="spacer"></span></div><span class="meta"><time>09:20</time></span></div></div>
-        </div>
-      </figure>
-    </section>
+      </div>
+    </div>
+  </div>
 
+  <div class="start-main">
     <section class="features" aria-label="Özellikler">
-      <div><h2>${icons.image}Medya yerinde</h2><p>Fotoğraf, video, sesli mesaj, çıkartma, belge, kişi kartı ve anketler gönderildikleri mesajda görünür.</p></div>
-      <div><h2>${icons.phone}Android ve iPhone</h2><p>İki platformun Türkçe ve İngilizce dışa aktarımları kendiliğinden tanınır.</p></div>
-      <div><h2>${icons.search}Arama ve tarih</h2><p>Binlerce mesaj içinde ara, istediğin güne atla, fotoğrafları tam ekran gez.</p></div>
-      <div><h2>${icons.person}Kendi bakış açın</h2><p>Adını seçtiğinde kendi mesajların sağda, yeşil baloncuklarda görünür.</p></div>
+      <article><span class="f-icon">${icons.image}</span><h2>Her şey yerli yerinde</h2><p>Fotoğraf, video, sesli mesaj, çıkartma, belge, kişi kartı ve anketler mesajın içinde görünür.</p></article>
+      <article><span class="f-icon">${icons.search}</span><h2>Bul, git, oku</h2><p>Binlerce mesaj arasında ara, istediğin tarihe atla, fotoğrafları tam ekran gez.</p></article>
+      <article><span class="f-icon">${icons.person}</span><h2>Senin bakış açın</h2><p>Kendi adını seç, mesajların sağda yeşil baloncuklarda görünsün. Koyu tema da hazır.</p></article>
+      <article><span class="f-icon">${icons.bolt}</span><h2>Hafif ve hızlı</h2><p>Tek bir dosya, kurulum yok. 60 bin mesajlık gruplar bile akıcı açılır.</p></article>
     </section>
 
-    <section class="steps" id="nasil" aria-labelledby="nasil-baslik">
-      <h2 id="nasil-baslik">Nasıl çalışır?</h2>
+    <section class="steps" id="nasil" aria-label="Nasıl çalışır?">
+      <p class="eyebrow">Nasıl çalışır?</p>
+      <h2>Üç adımda sohbetin karşında</h2>
       <ol class="step-list">
         <li>
+          <span class="step-no">1</span>
           <h3>Sohbeti dışa aktar</h3>
           <p><b>Android:</b> Sohbet → <b>⋮</b> → Diğer → <b>Sohbeti dışa aktar</b> → Medyayı ekle</p>
           <p><b>iPhone:</b> Sohbet → kişi/grup adı → <b>Sohbeti Dışa Aktar</b> → Medya Ekle</p>
         </li>
         <li>
-          <h3>Zip dosyasını aç</h3>
-          <p>Dosyayı yukarıdaki alana sürükle ya da <b>Dosya seç</b>'e tıkla. Zip'i önceden açmana gerek yok.</p>
+          <span class="step-no">2</span>
+          <h3>Zip'i buraya bırak</h3>
+          <p>Dosyayı açmana gerek yok. Olduğu gibi sürükle ya da <b>Dosya seç</b>'e tıkla.</p>
         </li>
         <li>
+          <span class="step-no">3</span>
           <h3>Oku, ara, gez</h3>
-          <p>Üstteki <b>Ben:</b> menüsünden adını seç.</p>
+          <p>Sohbet WhatsApp'taki gibi açılır. <b>Ben:</b> menüsünden kendi adını seç.</p>
           <ul class="shortcuts" aria-label="Kısayollar">
             <li class="kb-only"><span><kbd>Ctrl</kbd> + <kbd>F</kbd></span>Sohbette ara</li>
             <li class="kb-only"><span><kbd>Enter</kbd> / <kbd>Shift</kbd> + <kbd>Enter</kbd></span>Sonraki / önceki sonuç</li>
@@ -91,9 +100,12 @@ start.innerHTML = `
       </ol>
     </section>
 
-    <section class="privacy" id="gizlilik" aria-labelledby="gizlilik-baslik">
-      <h2 id="gizlilik-baslik">${icons.lock}Gizlilik</h2>
-      <p>Zip dosyan yalnızca bu sayfanın içinde, kendi tarayıcında açılır. Sayfa hiçbir sunucuya bağlanamayacak şekilde ayarlıdır; hesap, reklam ya da izleme kodu yoktur. Sekmeyi kapattığında açtığın her şey bellekten silinir.</p>
+    <section class="privacy" id="gizlilik" aria-label="Gizlilik">
+      <span class="privacy-icon">${icons.shield}</span>
+      <div>
+        <h2>Sohbetin sadece senin.</h2>
+        <p>Dosyan bu sayfadan dışarı çıkamaz: sayfa, tarayıcıya hiçbir sunucuya bağlanmama kuralıyla yüklenir. Hesap yok, reklam yok, izleme yok. Sayfayı kapattığında her şey bellekten silinir.</p>
+      </div>
     </section>
 
     <footer class="start-foot">

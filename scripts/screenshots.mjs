@@ -52,7 +52,7 @@ for (const [name, size, url] of shots) {
   const file = join(OUT, `${name}.png`);
   execFileSync(browser, [
     '--headless=new', '--disable-gpu', '--hide-scrollbars', '--force-device-scale-factor=2',
-    `--user-data-dir=${profile}`, `--window-size=${size}`, '--virtual-time-budget=15000',
+    `--user-data-dir=${profile}`, `--window-size=${size}`, '--virtual-time-budget=25000',
     `--screenshot=${file}`, url,
   ], { stdio: 'ignore' });
   console.log(`✓ ${name}.png`);
