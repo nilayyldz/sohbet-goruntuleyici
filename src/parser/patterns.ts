@@ -69,11 +69,11 @@ export const SELF_MARKERS = ['you deleted this message', 'bu mesajı sildiniz'];
 
 export const TR_HINTS = [
   'dosya ekli', 'dahil edilmedi', '<ek:', ' eklendi>', 'bu mesaj silindi', 'bu mesaj düzenlendi',
-  'uçtan uca şifreli', 'gruba ekledi', 'grubu oluşturdu', 'katıldı', 'ayrıldı',
+  'uçtan uca şifreli', 'anket:', 'gruba ekledi', 'grubu oluşturdu', 'katıldı', 'ayrıldı',
 ];
 export const EN_HINTS = [
   'file attached', 'omitted', '<attached:', 'this message was deleted', 'this message was edited',
-  'end-to-end encrypted', 'added', 'created group', 'joined', 'left',
+  'end-to-end encrypted', 'poll:', 'added', 'created group', 'joined', 'left',
 ];
 
 // ---- Dosya türü ---------------------------------------------------------
@@ -121,3 +121,10 @@ const MIME: Record<string, string> = {
 export function mimeFromName(name: string): string {
   return MIME[extOf(name)] ?? 'application/octet-stream';
 }
+
+// ---- Anketler -----------------------------------------------------------
+
+/** Anket başlığı: "ANKET:" (TR) / "POLL:" (EN) */
+export const POLL_HEADER = /^(ANKET|POLL):$/i;
+/** Seçenek satırı: "SEÇENEK: bu akşam (1 oy)" / "OPTION: tonight (2 votes)" */
+export const POLL_OPTION = /^(?:SEÇENEK|OPTION):\s?(.*?)\s?\((\d{1,7}) (?:oy|votes?)\)$/i;

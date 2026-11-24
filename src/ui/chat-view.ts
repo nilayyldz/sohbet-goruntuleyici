@@ -1,5 +1,5 @@
 import type { ResolveStats } from '../media/resolve';
-import type { Message, ParseResult } from '../parser/types';
+import type { Message, ParseResult, Poll } from '../parser/types';
 import type { MediaEntry } from '../zip/loader';
 import { dayKey, formatDay, formatTime, highlight, isEmojiOnly, renderRich, setMentionNames, toInputDate } from './format';
 import { icons } from './icons';
@@ -450,7 +450,10 @@ export class ChatView {
       note.append(document.createTextNode(m.deletedLabel ?? (m.selfDeleted ? 'Bu mesajı sildiniz' : 'Bu mesaj silindi')));
       body.append(note);
     }
-    if (m.text) {
+    if (m.poll) {
+      bubble.classList.add('has-poll');
+      body.append(renderPoll(m.poll));
+    } else if (m.text) {
       const text = h('span', 'text');
       if (isEmojiOnly(m.text) && !m.attachment) bubble.classList.add('emoji-only');
       renderRich(m.text, text);
@@ -522,4 +525,36 @@ function omittedText(label: string | undefined): string {
   if (name) return `${name} dışa aktarıma dahil edilmedi`;
   if (l) return `${l.charAt(0).toLocaleUpperCase('tr-TR')}${l.slice(1)} dışa aktarıma dahil edilmedi`;
   return 'Medya dışa aktarıma dahil edilmedi';
+}
+
+/** WhatsApp tarzı anket kartı: soru, seçenekler, oy çubukları ve toplam oy. */
+function renderPoll(poll: Poll): HTMLElement {
+  const card = h('div', 'poll');
+  const question = h('div', 'poll-question');
+  renderRich(poll.question, question);
+  card.append(question);
+  const total = poll.options.reduce((s, o) => s + o.votes, 0);
+  const max = Math.max(0, ...poll.options.map((o) => o.votes));
+  card.append(h('div', 'poll-hint', 'Anket'));
+  const list = h('ul', 'poll-options');
+  for (const o of poll.options) {
+    const li = h('li', o.votes > 0 && o.votes === max ? 'poll-option leading' : 'poll-option');
+    const row = h('div', 'poll-row');
+    const circle = h('span', 'poll-circle');
+    circle.setAttribute('aria-hidden', 'true');
+    const label = h('span', 'poll-label');
+    renderRich(o.text, label);
+    const count = h('span', 'poll-count', o.votes.toLocaleString('tr-TR'));
+    row.append(circle, label, count);
+    const bar = h('div', 'poll-bar');
+    const fill = h('div', 'poll-fill');
+    fill.style.width = total ? `${(o.votes / total) * 100}%` : '0%';
+    bar.append(fill);
+    li.setAttribute('aria-label', `${o.text}: ${o.votes} oy`);
+    li.append(row, bar);
+    list.append(li);
+  }
+  card.append(list);
+  card.append(h('div', 'poll-total', `Toplam ${total.toLocaleString('tr-TR')} oy`));
+  return card;
 }

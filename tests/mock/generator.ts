@@ -42,6 +42,7 @@ export interface ExpectedMessage {
   selfDeleted?: boolean;
   deletedLabel?: string;
   edited?: boolean;
+  poll?: { question: string; options: { text: string; votes: number }[] };
 }
 
 export interface MockExport {
@@ -276,7 +277,17 @@ export function generateExport(opts: MockOptions): MockExport {
     const author = r.pick(authors);
     const roll = r.next();
 
-    if (roll < 0.5) {
+    if (roll < 0.04) {
+      // Anket: "ANKET:/POLL:" + soru + "SEÇENEK:/OPTION: … (n oy/votes)"
+      const question = `${sentence(1, 6)}?`;
+      const options = Array.from({ length: r.int(2, 4) }, () => ({ text: sentence(1, 5), votes: r.int(0, o.people) }));
+      const head = o.lang === 'tr' ? 'ANKET:' : 'POLL:';
+      const optLines = options.map((op) =>
+        o.lang === 'tr' ? `SEÇENEK: ${op.text} (${op.votes} oy)` : `OPTION: ${op.text} (${op.votes} ${op.votes === 1 ? 'vote' : 'votes'})`,
+      );
+      const text = [head, question, ...optLines].join('\n');
+      emit(date, author, `${o.platform === 'ios' ? L : ''}${text}`, { text, poll: { question, options } });
+    } else if (roll < 0.5) {
       const multi = r.chance(0.15);
       let text = multi ? `${sentence(2, 8)}\n${sentence(1, 5)}\n- ${sentence(1, 3)}` : sentence(1, 14);
       if (r.chance(0.08)) text = `*${sentence(1, 3)}* ve _${sentence(1, 2)}_`;

@@ -18,6 +18,7 @@ function normalize(m: Message | ExpectedMessage) {
     selfDeleted: m.selfDeleted || undefined,
     deletedLabel: m.deletedLabel,
     edited: m.edited || undefined,
+    poll: m.poll,
   };
 }
 

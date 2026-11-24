@@ -1,9 +1,9 @@
 import {
   ANDROID_ATTACH_LABELS, ANDROID_ATTACHMENT, ANDROID_HEADER, BIDI_CHARS, DELETED, DELETED_BY, EDITED, EN_HINTS,
   IOS_ATTACHMENT, IOS_ATTACHMENT_SUFFIX, IOS_HEADER, LRM, OMITTED_EN, OMITTED_EXACT, OMITTED_TR, SELF_MARKERS, TR_HINTS,
-  kindFromName,
+  kindFromName, POLL_HEADER, POLL_OPTION,
 } from './patterns';
-import type { DateOrder, Lang, Message, ParseResult, Platform } from './types';
+import type { DateOrder, Lang, Message, ParseResult, Platform, Poll } from './types';
 
 interface RawEntry {
   a: number; b: number; c: number; aLen: number; sep: string;
@@ -166,6 +166,38 @@ function interpretText(msg: Message, rawText: string, markerTexts: string[]): vo
   }
 
   msg.text = text;
+  const poll = parsePoll(text);
+  if (poll) {
+    msg.poll = poll;
+    markerTexts.push(text.slice(0, text.indexOf(':') + 1).toLowerCase());
+  }
+}
+
+/**
+ * Anket metni:
+ *   ANKET:            POLL:
+ *   Soru              Question
+ *   SEÇENEK: a (1 oy) OPTION: a (1 vote)
+ * Soru birden çok satır olabilir; en az bir seçenek gerekir.
+ */
+export function parsePoll(text: string): Poll | null {
+  const lines = text.split('\n');
+  if (lines.length < 3 || !POLL_HEADER.test(lines[0].trim())) return null;
+  const question: string[] = [];
+  const options: Poll['options'] = [];
+  for (const raw of lines.slice(1)) {
+    const line = raw.trim();
+    const opt = POLL_OPTION.exec(line);
+    if (opt) {
+      options.push({ text: opt[1].trim(), votes: Number(opt[2]) });
+    } else if (options.length === 0) {
+      question.push(line);
+    } else {
+      return null; // seçeneklerden sonra beklenmeyen satır: anket değil
+    }
+  }
+  if (!options.length || !question.join('').trim()) return null;
+  return { question: question.join('\n').trim(), options };
 }
 
 function detectLang(markerTexts: string[]): Lang {
@@ -222,7 +254,7 @@ export function parseChat(input: string): ParseResult {
       // iOS sistem mesajları "Grup Adı: \u200EX gruba katıldı" biçimindedir (başta LRM).
       // Ekler ve işaretler de LRM ile başlar; onları ayırt etmek için önce yorumla.
       interpretText(msg, text, markerTexts);
-      const isMarker = msg.attachment || msg.omitted || msg.deleted || msg.edited;
+      const isMarker = msg.attachment || msg.omitted || msg.deleted || msg.edited || msg.poll;
       if (!isMarker) {
         msg.author = null;
         markerTexts.push(msg.text);

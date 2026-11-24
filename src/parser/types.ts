@@ -29,8 +29,15 @@ export interface Message {
   selfDeleted?: boolean;
   /** Silme bildiriminin özgün metni (ör. "Bu mesaj ~ Ad adlı yönetici tarafından silindi") */
   deletedLabel?: string;
+  /** Anket ("ANKET:/POLL:" ile başlayan mesaj). text alanı arama için ham metni korur. */
+  poll?: Poll;
   /** Belirsiz ek eşleşmezse geri dönülecek ham metin */
   raw?: string;
+}
+
+export interface Poll {
+  question: string;
+  options: { text: string; votes: number }[];
 }
 
 export interface ParseResult {
