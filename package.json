@@ -1,0 +1,32 @@
+{
+  "name": "whatsapp-sohbet-goruntuleyici",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:security": "vitest run tests/security.test.ts",
+    "typecheck": "tsc --noEmit",
+    "audit:prod": "npm audit --omit=dev",
+    "fixtures": "node scripts/make-fixtures.mjs"
+  },
+  "dependencies": {
+    "jszip": "3.10.1"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.30",
+    "happy-dom": "21.0.4",
+    "typescript": "5.9.3",
+    "vite": "6.4.6",
+    "vite-plugin-singlefile": "2.3.4",
+    "vitest": "4.1.12"
+  },
+  "description": "WhatsApp sohbet dışa aktarımlarını (zip) tamamen tarayıcıda, WhatsApp benzeri bir arayüzle görüntüleyen çevrimdışı web uygulaması.",
+  "engines": {
+    "node": ">=20"
+  }
+}

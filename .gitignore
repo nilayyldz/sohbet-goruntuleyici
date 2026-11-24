@@ -1,0 +1,18 @@
+node_modules/
+dist/
+coverage/
+
+# Örnek zip'ler `npm run fixtures` ile üretilir (büyük ikili dosyalar depoya girmesin)
+fixtures/
+
+# Gerçek dışa aktarımlar kişisel veri içerir; asla depoya eklemeyin
+*.zip
+samples/
+
+# Yerel araç ayarları
+.claude/
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+*.log
