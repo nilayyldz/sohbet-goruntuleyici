@@ -1,6 +1,6 @@
 <div align="center">
 
-# 💬 WhatsApp Sohbet Görüntüleyici
+# 💬 Sohbet Görüntüleyici
 
 **Dışa aktardığın WhatsApp sohbetlerini olduğu gibi oku: fotoğraflar, sesli mesajlar, belgeler ve anketler dahil.**<br />
 **Tamamen tarayıcında çalışır. Hiçbir şey yüklenmez.**
@@ -11,8 +11,8 @@
 ![Testler](https://img.shields.io/badge/Testler-127%20ba%C5%9Far%C4%B1l%C4%B1-2EA44F?style=for-the-badge&logo=vitest&logoColor=white)
 ![Lisans](https://img.shields.io/badge/Lisans-MIT-yellow?style=for-the-badge)
 
-[**▶ Hemen kullan**](https://nilayyldz.github.io/whatsapp-sohbet-goruntuleyici/) &nbsp;·&nbsp;
-[**⬇ İndir (internetsiz kullanım)**](https://github.com/nilayyldz/whatsapp-sohbet-goruntuleyici/releases/latest) &nbsp;·&nbsp;
+[**▶ Hemen kullan**](https://nilayyldz.github.io/sohbet-goruntuleyici/) &nbsp;·&nbsp;
+[**⬇ İndir (internetsiz kullanım)**](https://github.com/nilayyldz/sohbet-goruntuleyici/releases/latest) &nbsp;·&nbsp;
 [**🇬🇧 English**](README.md)
 
 <br />
@@ -77,8 +77,8 @@ Sonunda adı `WhatsApp Sohbeti - ….zip` gibi olan bir dosyan olur. **Zip'i aç
 
 ### 2. Görüntüleyiciyi aç
 
-- **Çevrimiçi:** [**Hemen kullan**](https://nilayyldz.github.io/whatsapp-sohbet-goruntuleyici/) bağlantısına tıkla.
-- **İnternetsiz:** [Son sürüm](https://github.com/nilayyldz/whatsapp-sohbet-goruntuleyici/releases/latest) sayfasından `index.html` dosyasını indir ve çift tıkla.
+- **Çevrimiçi:** [**Hemen kullan**](https://nilayyldz.github.io/sohbet-goruntuleyici/) bağlantısına tıkla.
+- **İnternetsiz:** [Son sürüm](https://github.com/nilayyldz/sohbet-goruntuleyici/releases/latest) sayfasından `index.html` dosyasını indir ve çift tıkla.
 
 ### 3. Zip'i bırak
 
@@ -120,8 +120,8 @@ Evet. Hemen kullan bağlantısını telefonunun tarayıcısında aç ve zip dosy
 ## 🛠️ Geliştiriciler için
 
 ```bash
-git clone https://github.com/nilayyldz/whatsapp-sohbet-goruntuleyici.git
-cd whatsapp-sohbet-goruntuleyici
+git clone https://github.com/nilayyldz/sohbet-goruntuleyici.git
+cd sohbet-goruntuleyici
 npm ci
 npm run dev      # http://localhost:5173
 npm test         # 127 test: ayrıştırıcı, mock uçtan uca, güvenlik

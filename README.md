@@ -1,6 +1,6 @@
 <div align="center">
 
-# 💬 WhatsApp Chat Viewer
+# 💬 Chat Viewer
 
 **Read your exported WhatsApp chats exactly as they looked — photos, voice notes, documents and polls included.**<br />
 **Runs 100% in your browser. Nothing is ever uploaded.**
@@ -11,13 +11,13 @@
 ![Tests](https://img.shields.io/badge/Tests-127%20passing-2EA44F?style=for-the-badge&logo=vitest&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
-[**▶ Try it now**](https://nilayyldz.github.io/whatsapp-sohbet-goruntuleyici/) &nbsp;·&nbsp;
-[**⬇ Download (works offline)**](https://github.com/nilayyldz/whatsapp-sohbet-goruntuleyici/releases/latest) &nbsp;·&nbsp;
+[**▶ Try it now**](https://nilayyldz.github.io/sohbet-goruntuleyici/) &nbsp;·&nbsp;
+[**⬇ Download (works offline)**](https://github.com/nilayyldz/sohbet-goruntuleyici/releases/latest) &nbsp;·&nbsp;
 [**🇹🇷 Türkçe**](README.tr.md)
 
 <br />
 
-<img src="docs/screenshots/landing.webp" alt="Landing page of WhatsApp Chat Viewer" width="900" />
+<img src="docs/screenshots/landing.webp" alt="Landing page of Chat Viewer" width="900" />
 
 </div>
 
@@ -77,8 +77,8 @@ You'll get a file named like `WhatsApp Chat - ….zip`. **No need to unzip it.**
 
 ### 2. Open the viewer
 
-- **Online:** go to [**the live page**](https://nilayyldz.github.io/whatsapp-sohbet-goruntuleyici/).
-- **Offline:** download `index.html` from the [latest release](https://github.com/nilayyldz/whatsapp-sohbet-goruntuleyici/releases/latest) and double-click it.
+- **Online:** go to [**the live page**](https://nilayyldz.github.io/sohbet-goruntuleyici/).
+- **Offline:** download `index.html` from the [latest release](https://github.com/nilayyldz/sohbet-goruntuleyici/releases/latest) and double-click it.
 
 ### 3. Drop the zip
 
@@ -120,8 +120,8 @@ Yes — open the live page in your phone's browser and pick the zip file.
 ## 🛠️ For Developers
 
 ```bash
-git clone https://github.com/nilayyldz/whatsapp-sohbet-goruntuleyici.git
-cd whatsapp-sohbet-goruntuleyici
+git clone https://github.com/nilayyldz/sohbet-goruntuleyici.git
+cd sohbet-goruntuleyici
 npm ci
 npm run dev      # http://localhost:5173
 npm test         # 127 tests: parser, mock round-trips, security

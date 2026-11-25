@@ -31,8 +31,8 @@ Uygulamayı yalnızca **kullanmak** istiyorsan [README](../README.md) yeterli.
 Gereken: [Node.js](https://nodejs.org/) 20 veya üstü.
 
 ```bash
-git clone https://github.com/nilayyldz/whatsapp-sohbet-goruntuleyici.git
-cd whatsapp-sohbet-goruntuleyici
+git clone https://github.com/nilayyldz/sohbet-goruntuleyici.git
+cd sohbet-goruntuleyici
 npm ci
 npm run build
 ```
@@ -229,7 +229,7 @@ tarayıcı ~500 pikselden dar pencere açamadığı için `dev/mobile.html` içi
 **GitHub Pages'i ilk kez açmak:** Depo public yapıldıktan sonra **Settings → Pages →
 Build and deployment → Source: GitHub Actions** seçilir. Ardından `main` dalına yapılan
 her push uygulamayı şu adreste günceller:
-`https://nilayyldz.github.io/whatsapp-sohbet-goruntuleyici/`
+`https://nilayyldz.github.io/sohbet-goruntuleyici/`
 
 **Yeni sürüm çıkarmak:**
 
