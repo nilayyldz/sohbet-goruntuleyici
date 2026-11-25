@@ -2,6 +2,7 @@ import type { BlobCache } from '../media/resolve';
 import type { Message } from '../parser/types';
 import type { MediaEntry } from '../zip/loader';
 import { formatDay, formatTime } from './format';
+import { t } from '../i18n';
 import { icons } from './icons';
 
 export interface GalleryItem {
@@ -25,17 +26,17 @@ export class Lightbox {
     this.root.hidden = true;
     this.root.setAttribute('role', 'dialog');
     this.root.setAttribute('aria-modal', 'true');
-    this.root.setAttribute('aria-label', 'Görsel gösterici');
+    this.root.setAttribute('aria-label', t('viewer'));
     this.root.innerHTML = `
       <div class="lb-bar">
         <div class="lb-caption"></div>
         <span class="lb-counter"></span>
-        <button class="icon-btn" data-act="download" type="button" aria-label="İndir" title="İndir">${icons.download}</button>
-        <button class="icon-btn" data-act="close" type="button" aria-label="Kapat" title="Kapat (Esc)">${icons.close}</button>
+        <button class="icon-btn" data-act="download" type="button" aria-label="${t('download')}" title="${t('download')}">${icons.download}</button>
+        <button class="icon-btn" data-act="close" type="button" aria-label="${t('close')}" title="${t('closeEsc')}">${icons.close}</button>
       </div>
-      <button class="lb-nav prev icon-btn" data-act="prev" type="button" aria-label="Önceki">${icons.left}</button>
+      <button class="lb-nav prev icon-btn" data-act="prev" type="button" aria-label="${t('prev')}">${icons.left}</button>
       <img class="lb-img" alt="" />
-      <button class="lb-nav next icon-btn" data-act="next" type="button" aria-label="Sonraki">${icons.right}</button>`;
+      <button class="lb-nav next icon-btn" data-act="next" type="button" aria-label="${t('next')}">${icons.right}</button>`;
     this.img = this.root.querySelector('.lb-img')!;
     this.caption = this.root.querySelector('.lb-caption')!;
     this.counter = this.root.querySelector('.lb-counter')!;

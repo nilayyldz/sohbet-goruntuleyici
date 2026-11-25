@@ -8,7 +8,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![Gizlilik](https://img.shields.io/badge/Gizlilik-%25100%20%C3%A7evrimd%C4%B1%C5%9F%C4%B1-25D366?style=for-the-badge&logo=letsencrypt&logoColor=white)
-![Testler](https://img.shields.io/badge/Testler-127%20ba%C5%9Far%C4%B1l%C4%B1-2EA44F?style=for-the-badge&logo=vitest&logoColor=white)
+![Testler](https://img.shields.io/badge/Testler-137%20ba%C5%9Far%C4%B1l%C4%B1-2EA44F?style=for-the-badge&logo=vitest&logoColor=white)
 ![Lisans](https://img.shields.io/badge/Lisans-MIT-yellow?style=for-the-badge)
 
 [**▶ Hemen kullan**](https://nilayyldz.github.io/sohbet-goruntuleyici/) &nbsp;·&nbsp;
@@ -33,6 +33,7 @@
 | 🔍 | **Ara ve gez** | Sohbette arama (`Ctrl+F`), tarihe atlama, klavyeyle gezilebilen tam ekran fotoğraf görüntüleyici. |
 | 🙋 | **Senin bakış açın** | Kendi adını seç; mesajların telefonundaki gibi sağda, yeşil baloncuklarda görünsün. |
 | 🌗 | **Açık ve koyu tema** | Sistem temanı izler, istediğin zaman değiştirebilirsin. |
+| 🌍 | **Türkçe ve İngilizce** | Arayüz tarayıcının diliyle açılır; **TR / EN** düğmesiyle istediğin zaman değiştirebilirsin. |
 | ⚡ | **Hızlı** | Tek, küçük bir HTML dosyası; kurulum yok. 60 bin mesajlık gruplar bile akıcı açılır. |
 
 ### ⌨️ Kısayollar
@@ -124,7 +125,7 @@ git clone https://github.com/nilayyldz/sohbet-goruntuleyici.git
 cd sohbet-goruntuleyici
 npm ci
 npm run dev      # http://localhost:5173
-npm test         # 127 test: ayrıştırıcı, mock uçtan uca, güvenlik
+npm test         # 137 test: ayrıştırıcı, mock uçtan uca, güvenlik, çeviri
 npm run build    # → dist/index.html (tek, bağımsız dosya)
 ```
 

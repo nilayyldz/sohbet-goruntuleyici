@@ -21,7 +21,16 @@
     </style>
   </head>
   <body>
-    <div class="phone"><iframe src="/?theme=light&landing=1&demo=x"></iframe></div>
-    <div class="phone"><iframe src="/?demo=Kamp%20Ekibi&me=Selin&theme=dark&scroll=Kamp%20listesi"></iframe></div>
+    <div class="phone"><iframe id="a"></iframe></div>
+    <div class="phone"><iframe id="b"></iframe></div>
+    <script>
+      // ?lang=en&chat=Camping%20Crew&doc=Camping%20list
+      const q = new URLSearchParams(location.search);
+      const lang = q.get('lang') || 'tr';
+      const chat = encodeURIComponent(q.get('chat') || 'Kamp Ekibi');
+      const doc = encodeURIComponent(q.get('doc') || 'Kamp listesi');
+      document.getElementById('a').src = `/?lang=${lang}&theme=light&landing=1&demo=x`;
+      document.getElementById('b').src = `/?lang=${lang}&demo=${chat}&me=Selin&theme=dark&scroll=${doc}`;
+    </script>
   </body>
 </html>

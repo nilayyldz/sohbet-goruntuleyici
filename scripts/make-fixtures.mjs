@@ -274,3 +274,35 @@ await save('WhatsApp Sohbeti - Kamp Ekibi.zip', {
   '00000017-AUDIO-2026-11-21-08-46-00.opus': wav(4, 440),
   '00000018-STICKER-2026-11-21-08-47-00.webp': sticker(),
 });
+
+// ---- Tanıtım sohbetinin İngilizcesi (README ekran görüntüleri, iOS EN) ------
+await save('WhatsApp Chat - Camping Crew.zip', {
+  '_chat.txt': [
+    `[11/18/26, 7:02:00${N}PM] Camping Crew: ${L}Messages and calls are end-to-end encrypted. No one outside of this chat, not even WhatsApp, can read or listen to them.`,
+    `${L}[11/18/26, 7:02:05${N}PM] Camping Crew: ${L}Deniz created group “Camping Crew”`,
+    `[11/18/26, 7:03:10${N}PM] Deniz: Is everyone ready for the camping weekend? 🏕️`,
+    `[11/18/26, 7:04:00${N}PM] Ece: I'm in! I'll bring the tent ⛺`,
+    `[11/18/26, 7:04:40${N}PM] Kaan: Me too, *grill* is on me 🔥`,
+    `${L}[11/18/26, 7:06:00${N}PM] Deniz: ${L}POLL:`,
+    `When should we leave?`,
+    `OPTION: Friday evening (3 votes)`,
+    `OPTION: Saturday early morning (1 vote)`,
+    `[11/18/26, 7:07:30${N}PM] Selin: Friday evening, less traffic 👍`,
+    `${L}[11/20/26, 9:15:00${N}PM] Deniz: ${L}Camping list.pdf • ${L}2 pages ${L}<attached: 00000010-Camping list.pdf>`,
+    `[11/20/26, 9:15:40${N}PM] Deniz: Check the list and tell me if anything's missing 📝 @Ece do you have the flashlight?`,
+    `[11/20/26, 9:17:00${N}PM] Ece: Yes, and spare batteries too 🔦`,
+    `${L}[11/21/26, 8:42:00${N}AM] Kaan: ${L}<attached: 00000013-PHOTO-2026-11-21-08-42-00.jpg>`,
+    `${L}[11/21/26, 8:42:10${N}AM] Kaan: ${L}<attached: 00000014-PHOTO-2026-11-21-08-42-10.jpg>`,
+    `[11/21/26, 8:43:00${N}AM] Kaan: Morning view from the tent 😍`,
+    `[11/21/26, 8:45:00${N}AM] Selin: Amazing!! Is the coffee ready? ☕`,
+    `${L}[11/21/26, 8:46:00${N}AM] Ece: ${L}<attached: 00000017-AUDIO-2026-11-21-08-46-00.opus>`,
+    `${L}[11/21/26, 8:47:00${N}AM] Deniz: ${L}<attached: 00000018-STICKER-2026-11-21-08-47-00.webp>`,
+    `[11/21/26, 8:30:00${N}PM] Selin: Next time let's go to the lake, here's the route: https://example.com/route`,
+    `[11/21/26, 8:31:00${N}PM] Deniz: Definitely, what a great weekend 🙌 ${L}<This message was edited>`,
+  ].join('\n'),
+  '00000010-Camping list.pdf': pdf('Camping list'),
+  '00000013-PHOTO-2026-11-21-08-42-00.jpg': gradient(800, 560, 0),
+  '00000014-PHOTO-2026-11-21-08-42-10.jpg': gradient(800, 560, 3),
+  '00000017-AUDIO-2026-11-21-08-46-00.opus': wav(4, 440),
+  '00000018-STICKER-2026-11-21-08-47-00.webp': sticker(),
+});

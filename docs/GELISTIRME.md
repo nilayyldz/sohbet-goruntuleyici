@@ -12,6 +12,7 @@ Uygulamayı yalnızca **kullanmak** istiyorsan [README](../README.md) yeterli.
 - [Desteklenen biçimler](#desteklenen-biçimler)
 - [Gizlilik ve güvenlik](#gizlilik-ve-güvenlik)
 - [Testler ve sahte veri (mock)](#testler-ve-sahte-veri-mock)
+- [Çeviri (TR/EN)](#çeviri-tren)
 - [Ekran görüntüleri ve demo modu](#ekran-görüntüleri-ve-demo-modu)
 - [Yayınlama (GitHub Pages ve Releases)](#yayınlama-github-pages-ve-releases)
 - [Katkıda bulunma](#katkıda-bulunma)
@@ -62,7 +63,8 @@ kontrolünü `npm run build` sonrasında `dist/index.html` üzerinde yap.
 index.html              Giriş sayfası (derlemede tek dosyaya gömülür)
 vite.config.ts          Tek dosya derleme + CSP eklentisi
 src/
-  main.ts               Dosya seçme/bırakma, yükleme akışı
+  main.ts               Dosya seçme/bırakma, yükleme akışı, dil değişimi
+  i18n.ts               Türkçe/İngilizce sözlük, t() çeviri işlevi, dil algılama
   parser/
     patterns.ts         Satır, ek ve işaret regex'leri; dosya türü/MIME tabloları
     parse.ts            Biçim/dil/tarih sırası tespiti, ayrıştırma, "ben" tahmini
@@ -76,6 +78,7 @@ src/
     media.ts            Tembel yüklenen medya bileşenleri, belge/kişi kartları
     lightbox.ts         Tam ekran görsel gösterici
     format.ts           Güvenli metin biçimlendirme, @etiket, vurgulama, tarih biçimleri
+    landing.ts          Tanıtım sayfası şablonu (çevrilebilir)
     icons.ts            Sabit SVG simgeleri
   styles.css            WhatsApp benzeri tema (açık/koyu)
 tests/                  Vitest testleri ve sahte veri üreticisi
@@ -134,7 +137,7 @@ iletişime geç.
 
 ## Testler ve sahte veri (mock)
 
-Test takımı Vitest ile çalışır ve **120'den fazla test** içerir:
+Test takımı Vitest ile çalışır ve **130'dan fazla test** içerir:
 
 | Dosya | Kapsam |
 |---|---|
@@ -144,6 +147,8 @@ Test takımı Vitest ile çalışır ve **120'den fazla test** içerir:
 | `tests/ios-tr-eklendi.test.ts` | iOS Türkçe `<… eklendi>` ekleri, belgeler, çıkartmalar |
 | `tests/mention.test.ts` | `@etiket` tanıma (çok kelimeli adlar, telefon numaraları, e-postalar) |
 | `tests/mock-roundtrip.test.ts` | **Sahte veriyle uçtan uca:** 8 biçim varyasyonu × 5 tohum; zip üret → yükle → ayrıştır → beklenenle karşılaştır |
+| `tests/poll.test.ts` | Anket ayrıştırma ve anket kartı |
+| `tests/i18n.test.ts` | Türkçe/İngilizce sözlüğün eksiksizliği ve güvenliği, canlı dil değişimi, tarih/sayı biçimleri |
 | `tests/security.test.ts` | XSS, ReDoS, zip saldırıları, kaynak kod denetimi, CSP |
 
 ### Sahte veri üreticisi
@@ -184,6 +189,18 @@ mesajlar, yönetici silmesi, grup sistem mesajları, telefon numarası yazarlar,
 `npm run fixtures` ise tarayıcıda elle denemek için gerçek görsel, ses ve PDF içeren örnek
 zip'leri `fixtures/` klasörüne yazar. Bunlar arasında 60 bin mesajlık bir grup da var.
 
+## Çeviri (TR/EN)
+
+Arayüz metinlerinin tamamı `src/i18n.ts` içindeki iki sözlükte durur. Kodda metin yazmak yerine
+`t('anahtar')` kullanılır; yer tutucular `t('pollTotal', { n: 4 })` biçimindedir.
+
+- Dil ilk açılışta tarayıcı dilinden seçilir (`tr` ile başlıyorsa Türkçe, değilse İngilizce) ve
+  **TR / EN** düğmesiyle değiştirilir; seçim `localStorage`'da saklanır.
+- Dil değişince tanıtım sayfası ve açık sohbet yeniden çizilir ("Ben" seçimi korunur).
+- Yeni bir metin eklerken anahtarı **iki sözlüğe de** ekle; `tests/i18n.test.ts` eksik anahtarı,
+  farklı yer tutucuları, İngilizcede kalmış Türkçe karakterleri ve izin verilmeyen HTML'i yakalar.
+- Sohbet içeriği (mesajlar, adlar) çevrilmez; ayrıştırıcı dilden bağımsızdır.
+
 ## Ekran görüntüleri ve demo modu
 
 README'deki görüntüler `docs/screenshots/` altındadır ve tamamen **uydurma** verilerle üretilir.
@@ -210,6 +227,7 @@ http://localhost:5173/?demo=Kamp%20Ekibi&me=Selin&theme=dark&scroll=Kamp%20liste
 | `search=<metin>` | Arama çubuğunu açıp arar |
 | `lightbox=1` | İlk fotoğrafı tam ekran açar |
 | `landing=1` | Başlangıç sayfasında kalır |
+| `lang=tr\|en` | Arayüz dilini ayarlar |
 
 `dev/` klasörü derlemeye girmez. `main.ts` onu yalnızca `import.meta.env.DEV` iken yükler;
 CI, derlenmiş dosyada `fetch(` geçmediğini ayrıca kontrol eder. Mobil görünüm, başsız

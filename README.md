@@ -8,7 +8,7 @@
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
 ![Vite](https://img.shields.io/badge/Vite-6-646CFF?style=for-the-badge&logo=vite&logoColor=white)
 ![Privacy](https://img.shields.io/badge/Privacy-100%25%20offline-25D366?style=for-the-badge&logo=letsencrypt&logoColor=white)
-![Tests](https://img.shields.io/badge/Tests-127%20passing-2EA44F?style=for-the-badge&logo=vitest&logoColor=white)
+![Tests](https://img.shields.io/badge/Tests-137%20passing-2EA44F?style=for-the-badge&logo=vitest&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
 
 [**▶ Try it now**](https://nilayyldz.github.io/sohbet-goruntuleyici/) &nbsp;·&nbsp;
@@ -17,7 +17,7 @@
 
 <br />
 
-<img src="docs/screenshots/landing.webp" alt="Landing page of Chat Viewer" width="900" />
+<img src="docs/screenshots/landing-en.webp" alt="Landing page of Chat Viewer" width="900" />
 
 </div>
 
@@ -33,6 +33,7 @@
 | 🔍 | **Search & navigate** | Full-text search (`Ctrl+F`), jump to any date, full-screen photo viewer with keyboard navigation. |
 | 🙋 | **Your point of view** | Pick your own name and your messages move to the right, in green bubbles — just like on your phone. |
 | 🌗 | **Light & dark themes** | Follows your system theme, switchable anytime. |
+| 🌍 | **English & Turkish** | The interface follows your browser language; switch anytime with the **TR / EN** button. |
 | ⚡ | **Fast** | One small HTML file, no install. Group chats with 60,000+ messages stay smooth. |
 
 ### ⌨️ Shortcuts
@@ -51,17 +52,17 @@ On phones and tablets, use the 🔍 and 📅 buttons in the top bar and tap a ph
 
 <table>
   <tr>
-    <td width="50%"><img src="docs/screenshots/chat-light.webp" alt="Group chat with a poll, light theme" /><br /><sub><b>Group chat</b> — colored names, polls, formatting</sub></td>
-    <td width="50%"><img src="docs/screenshots/chat-dark.webp" alt="Documents, mentions and photos, dark theme" /><br /><sub><b>Dark theme</b> — documents, @mentions, photos</sub></td>
+    <td width="50%"><img src="docs/screenshots/chat-light-en.webp" alt="Group chat with a poll, light theme" /><br /><sub><b>Group chat</b> — colored names, polls, formatting</sub></td>
+    <td width="50%"><img src="docs/screenshots/chat-dark-en.webp" alt="Documents, mentions and photos, dark theme" /><br /><sub><b>Dark theme</b> — documents, @mentions, photos</sub></td>
   </tr>
   <tr>
-    <td width="50%"><img src="docs/screenshots/search.webp" alt="Searching inside a chat" /><br /><sub><b>Search</b> — highlighted results, jump between hits</sub></td>
-    <td width="50%"><img src="docs/screenshots/lightbox.webp" alt="Full-screen photo viewer" /><br /><sub><b>Photo viewer</b> — full screen, ← / → to browse</sub></td>
+    <td width="50%"><img src="docs/screenshots/search-en.webp" alt="Searching inside a chat" /><br /><sub><b>Search</b> — highlighted results, jump between hits</sub></td>
+    <td width="50%"><img src="docs/screenshots/lightbox-en.webp" alt="Full-screen photo viewer" /><br /><sub><b>Photo viewer</b> — full screen, ← / → to browse</sub></td>
   </tr>
 </table>
 
 <div align="center">
-  <img src="docs/screenshots/mobile.webp" alt="Mobile view" width="640" /><br />
+  <img src="docs/screenshots/mobile-en.webp" alt="Mobile view" width="640" /><br />
   <sub><b>Mobile</b> — works on phones and tablets too</sub>
 </div>
 
@@ -124,7 +125,7 @@ git clone https://github.com/nilayyldz/sohbet-goruntuleyici.git
 cd sohbet-goruntuleyici
 npm ci
 npm run dev      # http://localhost:5173
-npm test         # 127 tests: parser, mock round-trips, security
+npm test         # 137 tests: parser, mock round-trips, security, i18n
 npm run build    # → dist/index.html (single self-contained file)
 ```
 

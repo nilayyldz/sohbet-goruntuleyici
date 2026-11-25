@@ -201,10 +201,19 @@ describe('Kaynak kod denetimi', () => {
         const ok =
           /^icons\.\w+;$/.test(rhs) || // sabit SVG simgesi
           rhs === 'icon;' || // iconButton(icons.x, …) parametresi
-          (rhs.startsWith('`') && collectTemplate(lines, i).every((v) => /^icons\.\w+$/.test(v)));
+          rhs === 'landingHtml();' || // aşağıdaki testte ayrıca denetlenir
+          (rhs.startsWith('`') && collectTemplate(lines, i).every(isSafeInterpolation));
         expect(ok, `${f}:${i + 1} → ${rhs}`).toBe(true);
       });
     }
+  });
+
+  it('tanıtım sayfası şablonu yalnızca simge ve sabit çevirileri içerir', () => {
+    const src = readFileSync(join(SRC, 'ui', 'landing.ts'), 'utf8');
+    const tpl = src.slice(src.indexOf('return `'));
+    const parts = [...tpl.matchAll(/\$\{([^}]*)\}/g)].map((m) => m[1].trim());
+    expect(parts.length).toBeGreaterThan(10);
+    for (const p of parts) expect(isSafeInterpolation(p), p).toBe(true);
   });
 
   it('iconButton yalnızca icons.* ile çağrılır', () => {
@@ -221,6 +230,11 @@ describe('Kaynak kod denetimi', () => {
     expect(src).toContain("a.rel = 'noopener noreferrer nofollow'");
   });
 });
+
+/** Şablonlarda izin verilen ifadeler: sabit simgeler ve sabit sözlük değerleri (t('anahtar')). */
+function isSafeInterpolation(expr: string): boolean {
+  return /^icons\.\w+$/.test(expr) || /^t\('\w+'\)$/.test(expr);
+}
 
 /** innerHTML'e atanan şablon dizesindeki ${…} ifadelerini döndürür. */
 function collectTemplate(lines: string[], start: number): string[] {

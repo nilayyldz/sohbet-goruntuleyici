@@ -1,3 +1,4 @@
+import { AppError } from '../i18n';
 import {
   ANDROID_ATTACH_LABELS, ANDROID_ATTACHMENT, ANDROID_HEADER, BIDI_CHARS, DELETED, DELETED_BY, EDITED, EN_HINTS,
   IOS_ATTACHMENT, IOS_ATTACHMENT_SUFFIX, IOS_HEADER, LRM, OMITTED_EN, OMITTED_EXACT, OMITTED_TR, SELF_MARKERS, TR_HINTS,
@@ -216,7 +217,7 @@ export function parseChat(input: string): ParseResult {
   const lines = input.replace(/^\uFEFF/, '').split(/\r\n|\n|\r|\u2028/);
   const platform = detectPlatform(lines);
   if (!platform) {
-    throw new Error('Bu dosya bir WhatsApp sohbet dışa aktarımına benzemiyor.');
+    throw new AppError('errNotChat');
   }
   const header = platform === 'ios' ? IOS_HEADER : ANDROID_HEADER;
 

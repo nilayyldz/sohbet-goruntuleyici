@@ -1,3 +1,5 @@
+import { locale, t } from '../i18n';
+
 /**
  * WhatsApp metin biçimlendirmesini güvenli şekilde DOM düğümlerine çevirir
  * (innerHTML kullanılmaz). *kalın* _italik_ ~üstü çizili~ ```kod``` ve bağlantılar.
@@ -148,22 +150,34 @@ export function formatSize(bytes: number): string {
     n /= 1024;
     i++;
   }
-  return `${n.toLocaleString('tr-TR', { maximumFractionDigits: i === 0 ? 0 : 1 })} ${units[i]}`;
+  return `${n.toLocaleString(locale(), { maximumFractionDigits: i === 0 ? 0 : 1 })} ${units[i]}`;
 }
 
-const timeFmt = new Intl.DateTimeFormat('tr-TR', { hour: '2-digit', minute: '2-digit' });
-const dayFmt = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' });
-const weekdayFmt = new Intl.DateTimeFormat('tr-TR', { weekday: 'long' });
+// Biçimleyiciler seçili dile göre önbelleğe alınır
+const fmtCache = new Map<string, Intl.DateTimeFormat>();
+function fmt(kind: 'time' | 'day' | 'weekday'): Intl.DateTimeFormat {
+  const key = `${locale()}|${kind}`;
+  let f = fmtCache.get(key);
+  if (!f) {
+    const opts: Intl.DateTimeFormatOptions =
+      kind === 'time' ? { hour: locale() === 'tr-TR' ? '2-digit' : 'numeric', minute: '2-digit' }
+      : kind === 'day' ? { day: 'numeric', month: 'long', year: 'numeric' }
+      : { weekday: 'long' };
+    f = new Intl.DateTimeFormat(locale(), opts);
+    fmtCache.set(key, f);
+  }
+  return f;
+}
 
-export const formatTime = (d: Date) => timeFmt.format(d);
+export const formatTime = (d: Date) => fmt('time').format(d);
 
 export function formatDay(d: Date, now = new Date()): string {
   const startOf = (x: Date) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
   const diff = Math.round((startOf(now) - startOf(d)) / 86_400_000);
-  if (diff === 0) return 'Bugün';
-  if (diff === 1) return 'Dün';
-  if (diff > 1 && diff < 7) return weekdayFmt.format(d);
-  return dayFmt.format(d);
+  if (diff === 0) return t('today');
+  if (diff === 1) return t('yesterday');
+  if (diff > 1 && diff < 7) return fmt('weekday').format(d);
+  return fmt('day').format(d);
 }
 
 export function dayKey(d: Date): string {

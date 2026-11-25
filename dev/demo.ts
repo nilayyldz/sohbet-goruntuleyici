@@ -6,9 +6,14 @@
  *   &search=kamp   → arama çubuğunu açıp arar
  *   &lightbox=1    → ilk fotoğrafı tam ekran açar
  *   &landing=1     → başlangıç sayfasında kalır (yalnızca tema uygulanır)
+ *   &lang=en       → arayüz dili (tr | en)
  */
+import { setLang } from '../src/i18n';
+
 export async function runDemo(open: (f: File) => Promise<void>): Promise<void> {
   const q = new URLSearchParams(location.search);
+  const lang = q.get('lang');
+  if (lang === 'tr' || lang === 'en') setLang(lang, false);
   const theme = q.get('theme');
   if (theme === 'dark' || theme === 'light') document.documentElement.dataset.theme = theme;
   const demo = q.get('demo');
@@ -27,8 +32,15 @@ export async function runDemo(open: (f: File) => Promise<void>): Promise<void> {
     }
   } as unknown as typeof IntersectionObserver;
 
-  const name = `WhatsApp Sohbeti - ${demo}.zip`;
-  const blob = await fetch(`/fixtures/${encodeURIComponent(name)}`).then((r) => r.blob());
+  // Türkçe ve İngilizce adlandırılmış örnekleri dene
+  let name = `WhatsApp Sohbeti - ${demo}.zip`;
+  let res = await fetch(`/fixtures/${encodeURIComponent(name)}`);
+  // Vite, olmayan dosyada 404 yerine index.html döndürür: içerik türüne bak
+  if (!res.ok || (res.headers.get('content-type') ?? '').includes('text/html')) {
+    name = `WhatsApp Chat - ${demo}.zip`;
+    res = await fetch(`/fixtures/${encodeURIComponent(name)}`);
+  }
+  const blob = await res.blob();
   await open(new File([blob], name));
   await wait(1500);
 
@@ -47,7 +59,7 @@ export async function runDemo(open: (f: File) => Promise<void>): Promise<void> {
   }
   const search = q.get('search');
   if (search) {
-    document.querySelector<HTMLButtonElement>('[aria-label^="Sohbette ara"]')?.click();
+    document.querySelector<HTMLButtonElement>('[data-act="search"]')?.click();
     const input = document.querySelector<HTMLInputElement>('.search-bar input');
     if (input) {
       input.value = search;

@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig, type Plugin } from 'vite';
 import { viteSingleFile } from 'vite-plugin-singlefile';
 
@@ -34,4 +35,5 @@ export default defineConfig({
   base: './',
   plugins: [cspPlugin(), viteSingleFile()],
   build: { target: 'es2022', modulePreload: { polyfill: false } },
+  test: { setupFiles: ['tests/setup.ts'] },
 });

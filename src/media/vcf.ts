@@ -1,3 +1,5 @@
+import { t } from '../i18n';
+
 export interface Contact {
   name: string;
   phones: string[];
@@ -20,6 +22,6 @@ export function parseVcf(text: string): Contact[] {
       else if (!name && (key === 'N' || key.startsWith('N;'))) name = val.split(';').filter(Boolean).reverse().join(' ');
       else if (key === 'TEL' || key.startsWith('TEL;') || /^ITEM\d+\.TEL/.test(key)) phones.push(val);
     }
-    return { name: name || 'Kişi', phones };
+    return { name: name || t('contactDefault'), phones };
   });
 }

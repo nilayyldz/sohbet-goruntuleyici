@@ -35,17 +35,25 @@ const OUT = resolve('docs/screenshots');
 mkdirSync(OUT, { recursive: true });
 const profile = mkdtempSync(join(tmpdir(), 'wa-shots-'));
 
-const demo = `${BASE}?demo=${encodeURIComponent('Kamp Ekibi')}&me=Selin`;
-const shots = [
-  ['landing', '1280,800', `${BASE}?theme=light&landing=1&demo=x`],
-  ['chat-light', '1280,800', `${demo}&theme=light&scroll=${encodeURIComponent('Herkes hazır')}`],
-  ['chat-dark', '1280,800', `${demo}&theme=dark&scroll=${encodeURIComponent('Kamp listesi')}`],
-  ['search', '1280,800', `${demo}&theme=light&search=kamp`],
-  ['lightbox', '1280,800', `${demo}&theme=dark&lightbox=1`],
-  // Başsız tarayıcı ~500 pikselden dar pencere açamadığı için mobil görünüm
-  // iki telefon çerçevesi içeren dev/mobile.html sayfasından alınır.
-  ['mobile', '1100,960', `${BASE}dev/mobile.html`],
+// Her dil için ayrı görüntüler: Türkçe README *.png/webp, İngilizce README *-en.png/webp kullanır
+const SETS = [
+  { suffix: '', lang: 'tr', chat: 'Kamp Ekibi', first: 'Herkes hazır', doc: 'Kamp listesi', query: 'kamp' },
+  { suffix: '-en', lang: 'en', chat: 'Camping Crew', first: 'Is everyone ready', doc: 'Camping list', query: 'camping' },
 ];
+const shots = [];
+for (const s of SETS) {
+  const demo = `${BASE}?lang=${s.lang}&demo=${encodeURIComponent(s.chat)}&me=Selin`;
+  shots.push(
+    [`landing${s.suffix}`, '1280,800', `${BASE}?lang=${s.lang}&theme=light&landing=1&demo=x`],
+    [`chat-light${s.suffix}`, '1280,800', `${demo}&theme=light&scroll=${encodeURIComponent(s.first)}`],
+    [`chat-dark${s.suffix}`, '1280,800', `${demo}&theme=dark&scroll=${encodeURIComponent(s.doc)}`],
+    [`search${s.suffix}`, '1280,800', `${demo}&theme=light&search=${s.query}`],
+    [`lightbox${s.suffix}`, '1280,800', `${demo}&theme=dark&lightbox=1`],
+    // Başsız tarayıcı ~500 pikselden dar pencere açamadığı için mobil görünüm
+    // iki telefon çerçevesi içeren dev/mobile.html sayfasından alınır.
+    [`mobile${s.suffix}`, '1100,960', `${BASE}dev/mobile.html?lang=${s.lang}&chat=${encodeURIComponent(s.chat)}&doc=${encodeURIComponent(s.doc)}`],
+  );
+}
 
 for (const [name, size, url] of shots) {
   const file = join(OUT, `${name}.png`);

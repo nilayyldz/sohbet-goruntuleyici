@@ -3,6 +3,7 @@ import { parseVcf } from '../media/vcf';
 import { baseName, extOf } from '../parser/patterns';
 import type { AttachmentRef } from '../parser/types';
 import type { MediaEntry } from '../zip/loader';
+import { t } from '../i18n';
 import { formatSize } from './format';
 import { icons } from './icons';
 
@@ -92,7 +93,7 @@ export class MediaLoader {
   private image(entry: MediaEntry, sticker: boolean, onClick: () => void): HTMLElement {
     const box = el('button', sticker ? 'media sticker' : 'media img-box');
     box.type = 'button';
-    box.setAttribute('aria-label', `Görseli büyüt: ${entry.name}`);
+    box.setAttribute('aria-label', t('imageZoom', { name: entry.name }));
     const img = el('img');
     img.alt = entry.name;
     img.decoding = 'async';
@@ -108,7 +109,7 @@ export class MediaLoader {
     img.addEventListener('error', () => {
       if (!img.getAttribute('src')) return;
       // Ör. HEIC çoğu tarayıcıda gösterilemez → belge kartına dön
-      box.replaceWith(this.document(entry, 'Bu görsel biçimi tarayıcıda gösterilemiyor.'));
+      box.replaceWith(this.document(entry, t('imageUnsupported')));
     });
     this.watch(
       box,
@@ -133,7 +134,7 @@ export class MediaLoader {
     });
     v.addEventListener('error', () => {
       if (!v.getAttribute('src')) return;
-      box.replaceWith(this.document(entry, 'Bu video biçimi tarayıcıda oynatılamıyor.'));
+      box.replaceWith(this.document(entry, t('videoUnsupported')));
     });
     this.watch(
       box,
@@ -159,11 +160,11 @@ export class MediaLoader {
     const ext = extOf(entry.name);
     const probe = ext === 'opus' || ext === 'ogg' ? 'audio/ogg; codecs=opus' : ext === 'amr' ? 'audio/amr' : '';
     if (probe && !a.canPlayType(probe)) {
-      return this.document(entry, 'Bu tarayıcı bu ses biçimini (.opus) çalamıyor. İndirip başka bir oynatıcıyla açabilirsin.');
+      return this.document(entry, t('opusUnsupported'));
     }
     a.addEventListener('error', () => {
       if (!a.getAttribute('src')) return;
-      box.replaceWith(this.document(entry, 'Bu ses dosyası tarayıcıda çalınamıyor.'));
+      box.replaceWith(this.document(entry, t('audioUnsupported')));
     });
     this.watch(box, () => void this.cache.url(entry).then((u) => (a.src = u)));
     return box;
@@ -180,10 +181,10 @@ export class MediaLoader {
     const dl = this.downloadButton(entry);
     card.append(avatar, info, dl);
     this.watch(card, () => {
-      void this.cache.text(entry).then((t) => {
-        const c = parseVcf(t);
+      void this.cache.text(entry).then((vcfText) => {
+        const c = parseVcf(vcfText);
         if (c.length) {
-          name.textContent = c.length > 1 ? `${c[0].name} ve ${c.length - 1} kişi daha` : c[0].name;
+          name.textContent = c.length > 1 ? t('contactMore', { name: c[0].name, n: c.length - 1 }) : c[0].name;
           phones.textContent = c[0].phones.join(' · ');
         }
       });
@@ -204,8 +205,8 @@ export class MediaLoader {
     if (OPENABLE.has(ext)) {
       const open = el('button', 'icon-btn small');
       open.type = 'button';
-      open.title = 'Yeni sekmede aç';
-      open.setAttribute('aria-label', 'Yeni sekmede aç');
+      open.title = t('openTab');
+      open.setAttribute('aria-label', t('openTab'));
       open.innerHTML = icons.open;
       open.addEventListener('click', async () => {
         // Açılır pencere engelleyicisine takılmamak için sekmeyi hemen aç
@@ -223,8 +224,8 @@ export class MediaLoader {
   private downloadButton(entry: MediaEntry): HTMLElement {
     const b = el('button', 'icon-btn small');
     b.type = 'button';
-    b.title = 'İndir';
-    b.setAttribute('aria-label', `İndir: ${entry.name}`);
+    b.title = t('download');
+    b.setAttribute('aria-label', t('downloadName', { name: entry.name }));
     b.innerHTML = icons.download;
     b.addEventListener('click', async () => {
       const a = el('a');
@@ -241,8 +242,8 @@ export class MediaLoader {
 /** Zip'te olmayan çıkartma: dosya adı yerine sade bir "Çıkartma" notu */
 function missingSticker(): HTMLElement {
   const note = el('span', 'muted sticker-missing');
-  note.textContent = '🏷️ Çıkartma';
-  note.title = 'Çıkartma dosyası zip içinde yok.';
+  note.textContent = t('stickerMissing');
+  note.title = t('stickerMissingTitle');
   return note;
 }
 
@@ -251,7 +252,7 @@ function missingCard(name: string): HTMLElement {
   const icon = el('span', 'doc-icon');
   icon.innerHTML = icons.clip;
   const info = el('div', 'doc-info');
-  info.append(el('div', 'doc-name', displayName(name)), el('div', 'doc-note', 'Bu dosya zip içinde yok.'));
+  info.append(el('div', 'doc-name', displayName(name)), el('div', 'doc-note', t('fileMissing')));
   card.append(icon, info);
   return card;
 }

@@ -1,3 +1,4 @@
+import { AppError } from '../i18n';
 import JSZip from 'jszip';
 import { baseName } from '../parser/patterns';
 import { detectPlatform } from '../parser/parse';
@@ -66,7 +67,7 @@ function uncompressedSize(f: JSZip.JSZipObject): number {
 
 export async function loadFile(file: File): Promise<LoadedExport> {
   if (/\.txt$/i.test(file.name)) {
-    if (file.size > MAX_CHAT_BYTES) throw new Error('Sohbet metni tarayıcıda açılamayacak kadar büyük (256 MB sınırı).');
+    if (file.size > MAX_CHAT_BYTES) throw new AppError('errTooBig');
     return { chatText: await file.text(), chatFileName: file.name, media: new Map(), title: titleFromFileName(file.name) };
   }
 
@@ -74,7 +75,7 @@ export async function loadFile(file: File): Promise<LoadedExport> {
   try {
     zip = await JSZip.loadAsync(await file.arrayBuffer(), { decodeFileName: (b) => decodeFileName(b as string[] | Uint8Array) });
   } catch {
-    throw new Error('Zip dosyası açılamadı. Dosya bozuk veya zip değil.');
+    throw new AppError('errBadZip');
   }
 
   const files = Object.values(zip.files).filter((f) => !f.dir && !/(^|\/)(__MACOSX|\.DS_Store)/.test(f.name));
@@ -97,11 +98,7 @@ export async function loadFile(file: File): Promise<LoadedExport> {
     }
   }
   if (!chatText || !chatFile) {
-    throw new Error(
-      tooBig
-        ? 'Sohbet metni tarayıcıda açılamayacak kadar büyük (256 MB sınırı).'
-        : 'Zip içinde WhatsApp sohbet metni (.txt) bulunamadı.',
-    );
+    throw new AppError(tooBig ? 'errTooBig' : 'errNoChat');
   }
 
   const media = new Map<string, MediaEntry>();

@@ -2,6 +2,7 @@ import type { ResolveStats } from '../media/resolve';
 import type { Message, ParseResult, Poll } from '../parser/types';
 import type { MediaEntry } from '../zip/loader';
 import { dayKey, formatDay, formatTime, highlight, isEmojiOnly, renderRich, setMentionNames, toInputDate } from './format';
+import { getLang, locale, setLang, t } from '../i18n';
 import { icons } from './icons';
 import { Lightbox, type GalleryItem } from './lightbox';
 import { MediaLoader } from './media';
@@ -17,7 +18,8 @@ export interface ChatData {
 const AUTHOR_COLORS = 12;
 const ENCRYPTION = /(end-to-end encrypted|uçtan uca şifreli)/i;
 const PLATFORM_LABEL = { android: 'Android', ios: 'iOS' } as const;
-const LANG_LABEL = { tr: 'Türkçe', en: 'İngilizce', unknown: 'Bilinmiyor' } as const;
+const LANG_KEY = { tr: 'langTr', en: 'langEn', unknown: 'langUnknown' } as const;
+const ORDER_KEY = { DMY: 'orderDMY', MDY: 'orderMDY', YMD: 'orderYMD' } as const;
 
 function h<K extends keyof HTMLElementTagNameMap>(tag: K, cls?: string, text?: string): HTMLElementTagNameMap[K] {
   const e = document.createElement(tag);
@@ -81,7 +83,7 @@ export class ChatView {
     this.scroller.append(this.inner);
     this.progress = h('div', 'render-progress');
     this.subtitle.after(this.progress);
-    const fab = iconButton(icons.down, 'En son mesaja git', 'fab');
+    const fab = iconButton(icons.down, t('scrollEnd'), 'fab');
     fab.addEventListener('click', () => void this.scrollToEnd());
     this.scroller.addEventListener('scroll', () => {
       const gap = this.scroller.scrollHeight - this.scroller.scrollTop - this.scroller.clientHeight;
@@ -99,7 +101,7 @@ export class ChatView {
     this.lightbox.setItems(gallery);
 
     if (result.messages.length === 0) {
-      this.inner.append(h('div', 'sys', 'Bu sohbette mesaj yok.'));
+      this.inner.append(h('div', 'sys', t('emptyChat')));
     }
     setTimeout(() => this.renderChunk(), 0);
   }
@@ -116,7 +118,7 @@ export class ChatView {
   private buildHeader(): HTMLElement {
     const { result, title, stats } = this.data;
     const header = h('header', 'chat-header');
-    const back = iconButton(icons.left, 'Başka dosya aç', 'icon-btn back');
+    const back = iconButton(icons.left, t('back'), 'icon-btn back');
     back.addEventListener('click', () => this.onClose());
     const avatar = h('div', 'avatar', initials(title));
     // Sohbet adına göre sabit, iki tonlu bir renk
@@ -129,7 +131,7 @@ export class ChatView {
     this.subtitle = h('div', 'subtitle');
     this.subtitle.textContent = this.isGroup
       ? result.authors.join(', ')
-      : `${result.messages.length.toLocaleString('tr-TR')} mesaj`;
+      : t('messagesCount', { n: result.messages.length });
     this.subtitle.title = this.subtitle.textContent;
     titles.append(this.subtitle);
 
@@ -137,18 +139,18 @@ export class ChatView {
 
     // "Ben kimim?" seçimi
     const meLabel = h('label', 'me-select');
-    meLabel.title = 'Sağ tarafta (yeşil) gösterilecek kişi';
+    meLabel.title = t('meHint');
     const meIcon = h('span', 'me-icon');
     meIcon.innerHTML = icons.person;
     const select = h('select');
-    select.setAttribute('aria-label', 'Ben kimim?');
+    select.setAttribute('aria-label', t('meAria'));
     const option = (label: string, value: string) => {
       const o = h('option', '', label);
       o.value = value;
       return o;
     };
-    select.append(option('Ben: seçilmedi', ''));
-    for (const a of result.authors) select.append(option(`Ben: ${a}`, a));
+    select.append(option(t('meNone'), ''));
+    for (const a of result.authors) select.append(option(t('meOption', { name: a }), a));
     select.value = this.me ?? '';
     const markChoice = () => meLabel.classList.toggle('needs-choice', !select.value && result.authors.length > 1);
     markChoice();
@@ -158,15 +160,16 @@ export class ChatView {
     });
     meLabel.append(meIcon, select);
 
-    const searchBtn = iconButton(icons.search, 'Sohbette ara (Ctrl+F)');
+    const searchBtn = iconButton(icons.search, t('search'));
+    searchBtn.dataset.act = 'search';
     searchBtn.addEventListener('click', () => this.toggleSearch(true));
 
     const dateWrap = h('label', 'icon-btn date-btn');
-    dateWrap.title = 'Tarihe git';
+    dateWrap.title = t('jumpDate');
     dateWrap.innerHTML = icons.calendar;
     const dateInput = h('input');
     dateInput.type = 'date';
-    dateInput.setAttribute('aria-label', 'Tarihe git');
+    dateInput.setAttribute('aria-label', t('jumpDate'));
     const msgs = result.messages;
     if (msgs.length) {
       dateInput.min = toInputDate(msgs[0].date);
@@ -181,32 +184,32 @@ export class ChatView {
     });
     dateWrap.append(dateInput);
 
-    const infoBtn = iconButton(icons.file, 'Dışa aktarım bilgisi');
+    const infoBtn = iconButton(icons.file, t('info'));
     const info = h('div', 'info-pop');
     info.hidden = true;
     const rows: [string, string][] = [
-      ['Biçim', `${PLATFORM_LABEL[result.platform]} · ${LANG_LABEL[result.lang]}`],
-      ['Tarih sırası', { DMY: 'Gün.Ay.Yıl', MDY: 'Ay/Gün/Yıl', YMD: 'Yıl-Ay-Gün' }[result.dateOrder]],
-      ['Mesaj', result.messages.length.toLocaleString('tr-TR')],
-      ['Katılımcı', String(result.authors.length)],
-      ['Eşleşen medya', `${stats.found} / ${stats.referenced}`],
-      ['Dahil edilmeyen medya', result.messages.filter((x) => x.omitted).length.toLocaleString('tr-TR')],
+      [t('infoFormat'), `${PLATFORM_LABEL[result.platform]} · ${t(LANG_KEY[result.lang])}`],
+      [t('infoDateOrder'), t(ORDER_KEY[result.dateOrder])],
+      [t('infoMessages'), result.messages.length.toLocaleString(locale())],
+      [t('infoParticipants'), String(result.authors.length)],
+      [t('infoMatched'), `${stats.found} / ${stats.referenced}`],
+      [t('infoOmitted'), result.messages.filter((x) => x.omitted).length.toLocaleString(locale())],
     ];
-    if (stats.recovered) rows.push(['Zaman damgasıyla kurtarılan', String(stats.recovered)]);
-    if (stats.unused !== undefined) rows.push(["Zip'te kullanılmayan dosya", String(stats.unused)]);
-    if (msgs.length) rows.push(['Tarih aralığı', `${formatDay(msgs[0].date)} – ${formatDay(msgs[msgs.length - 1].date)}`]);
+    if (stats.recovered) rows.push([t('infoRecovered'), String(stats.recovered)]);
+    if (stats.unused !== undefined) rows.push([t('infoUnused'), String(stats.unused)]);
+    if (msgs.length) rows.push([t('infoRange'), `${formatDay(msgs[0].date)} – ${formatDay(msgs[msgs.length - 1].date)}`]);
     const dl = h('dl');
     for (const [k, v] of rows) dl.append(h('dt', '', k), h('dd', '', v));
     info.append(dl);
     if (stats.missing.length) {
       const det = h('details');
-      det.append(h('summary', '', `Zip'te bulunamayan ${stats.missing.length} dosya`));
+      det.append(h('summary', '', t('infoMissing', { n: stats.missing.length })));
       const ul = h('ul');
       for (const n of stats.missing.slice(0, 200)) ul.append(h('li', '', n));
       det.append(ul);
       info.append(det);
     }
-    info.append(h('p', 'privacy', 'Tüm işlemler bu cihazda yapıldı; hiçbir veri gönderilmedi.'));
+    info.append(h('p', 'privacy', t('infoPrivacy')));
     infoBtn.addEventListener('click', (e) => {
       e.stopPropagation();
       info.hidden = !info.hidden;
@@ -215,10 +218,16 @@ export class ChatView {
       if (!info.hidden && !info.contains(e.target as Node)) info.hidden = true;
     });
 
-    const themeBtn = iconButton(icons.theme, 'Açık/koyu tema');
+    const themeBtn = iconButton(icons.theme, t('themeToggle'), 'icon-btn theme-btn');
     themeBtn.addEventListener('click', () => toggleTheme());
 
-    tools.append(meLabel, searchBtn, dateWrap, infoBtn, themeBtn);
+    const langBtn = h('button', 'lang-btn', t('langCode'));
+    langBtn.type = 'button';
+    langBtn.title = t('langToggle');
+    langBtn.setAttribute('aria-label', t('langToggle'));
+    langBtn.addEventListener('click', () => setLang(getLang() === 'tr' ? 'en' : 'tr'));
+
+    tools.append(meLabel, searchBtn, dateWrap, infoBtn, langBtn, themeBtn);
     header.append(back, avatar, titles, tools, info);
     return header;
   }
@@ -228,13 +237,13 @@ export class ChatView {
     bar.hidden = true;
     const input = h('input');
     input.type = 'search';
-    input.placeholder = 'Sohbette ara…';
-    input.setAttribute('aria-label', 'Sohbette ara');
+    input.placeholder = t('searchPlaceholder');
+    input.setAttribute('aria-label', t('searchAria'));
     const count = h('span', 'search-count');
     count.setAttribute('aria-live', 'polite');
-    const prev = iconButton(icons.up, 'Önceki sonuç (Shift+Enter)');
-    const next = iconButton(icons.down, 'Sonraki sonuç (Enter)');
-    const close = iconButton(icons.close, 'Aramayı kapat (Esc)');
+    const prev = iconButton(icons.up, t('searchPrev'));
+    const next = iconButton(icons.down, t('searchNext'));
+    const close = iconButton(icons.close, t('searchClose'));
     let timer = 0;
     input.addEventListener('input', () => {
       clearTimeout(timer);
@@ -293,8 +302,8 @@ export class ChatView {
 
   private showHit(): void {
     this.searchCount.textContent = this.hits.length
-      ? `${(this.hitIndex + 1).toLocaleString('tr-TR')} / ${this.hits.length.toLocaleString('tr-TR')}`
-      : 'Sonuç yok';
+      ? `${(this.hitIndex + 1).toLocaleString(locale())} / ${this.hits.length.toLocaleString(locale())}`
+      : t('searchNone');
     if (this.hitIndex < 0) return;
     const id = this.hits[this.hitIndex];
     void this.scrollToMessage(id, true).then(() => {
@@ -392,7 +401,7 @@ export class ChatView {
     this.inner.append(frag);
 
     const done = this.rendered >= msgs.length;
-    this.progress.textContent = done ? '' : `Görüntüleniyor… %${Math.floor((this.rendered / msgs.length) * 100)}`;
+    this.progress.textContent = done ? '' : t('rendering', { p: Math.floor((this.rendered / msgs.length) * 100) });
     this.waiters = this.waiters.filter((w) => {
       if (w.id < this.rendered) {
         w.resolve();
@@ -447,12 +456,12 @@ export class ChatView {
       const note = h('span', 'muted');
       note.innerHTML = icons.ban;
       note.append(document.createTextNode(omittedText(m.omittedLabel)));
-      note.title = 'WhatsApp bu dosyayı dışa aktarıma eklemedi (medyasız dışa aktarım ya da telefonda indirilmemiş medya).';
+      note.title = t('omittedTitle');
       body.append(note);
     } else if (m.deleted) {
       const note = h('span', 'muted');
       note.innerHTML = icons.ban;
-      note.append(document.createTextNode(m.deletedLabel ?? (m.selfDeleted ? 'Bu mesajı sildiniz' : 'Bu mesaj silindi')));
+      note.append(document.createTextNode(m.deletedLabel ?? (m.selfDeleted ? t('selfDeleted') : t('deleted'))));
       body.append(note);
     }
     if (m.poll) {
@@ -466,10 +475,10 @@ export class ChatView {
       body.append(text);
     }
     const meta = h('span', 'meta');
-    if (m.edited) meta.append(h('span', 'edited', 'Düzenlendi'));
+    if (m.edited) meta.append(h('span', 'edited', t('edited')));
     const time = h('time', '', formatTime(m.date));
     time.dateTime = m.date.toISOString();
-    time.title = `${formatDay(m.date)} ${m.date.toLocaleTimeString('tr-TR')}`;
+    time.title = `${formatDay(m.date)} ${m.date.toLocaleTimeString(locale())}`;
     meta.append(time);
 
     if (mediaOnly) {
@@ -513,23 +522,23 @@ function nextFrame(): Promise<void> {
   return new Promise((r) => setTimeout(r, 32));
 }
 
-const OMITTED_NAMES: [RegExp, string][] = [
-  [/^(görüntü|fotoğraf|resim|image|photo)$/, 'Fotoğraf'],
-  [/^video$/, 'Video'],
-  [/^gif$/, 'GIF'],
-  [/^(ses|audio|sesli mesaj)$/, 'Ses kaydı'],
-  [/^(çıkartma|sticker)$/, 'Çıkartma'],
-  [/^(belge|document)$/, 'Belge'],
-  [/^(kişi kartı|contact card)$/, 'Kişi kartı'],
+const OMITTED_NAMES: [RegExp, Parameters<typeof t>[0]][] = [
+  [/^(görüntü|fotoğraf|resim|image|photo)$/, 'kindPhoto'],
+  [/^video$/, 'kindVideo'],
+  [/^gif$/, 'kindGif'],
+  [/^(ses|audio|sesli mesaj)$/, 'kindAudio'],
+  [/^(çıkartma|sticker)$/, 'kindSticker'],
+  [/^(belge|document)$/, 'kindDocument'],
+  [/^(kişi kartı|contact card)$/, 'kindContact'],
 ];
 
 /** "görüntü" → "Fotoğraf dışa aktarıma dahil edilmedi" */
 function omittedText(label: string | undefined): string {
   const l = (label ?? '').toLocaleLowerCase('tr-TR');
-  const name = OMITTED_NAMES.find(([re]) => re.test(l))?.[1];
-  if (name) return `${name} dışa aktarıma dahil edilmedi`;
-  if (l) return `${l.charAt(0).toLocaleUpperCase('tr-TR')}${l.slice(1)} dışa aktarıma dahil edilmedi`;
-  return 'Medya dışa aktarıma dahil edilmedi';
+  const key = OMITTED_NAMES.find(([re]) => re.test(l))?.[1];
+  if (key) return t('omitted', { kind: t(key) });
+  if (l) return t('omitted', { kind: `${l.charAt(0).toLocaleUpperCase('tr-TR')}${l.slice(1)}` });
+  return t('omitted', { kind: t('kindMedia') });
 }
 
 /** WhatsApp tarzı anket kartı: soru, seçenekler, oy çubukları ve toplam oy. */
@@ -540,7 +549,7 @@ function renderPoll(poll: Poll): HTMLElement {
   card.append(question);
   const total = poll.options.reduce((s, o) => s + o.votes, 0);
   const max = Math.max(0, ...poll.options.map((o) => o.votes));
-  card.append(h('div', 'poll-hint', 'Anket'));
+  card.append(h('div', 'poll-hint', t('poll')));
   const list = h('ul', 'poll-options');
   for (const o of poll.options) {
     const li = h('li', o.votes > 0 && o.votes === max ? 'poll-option leading' : 'poll-option');
@@ -549,17 +558,17 @@ function renderPoll(poll: Poll): HTMLElement {
     circle.setAttribute('aria-hidden', 'true');
     const label = h('span', 'poll-label');
     renderRich(o.text, label);
-    const count = h('span', 'poll-count', o.votes.toLocaleString('tr-TR'));
+    const count = h('span', 'poll-count', o.votes.toLocaleString(locale()));
     row.append(circle, label, count);
     const bar = h('div', 'poll-bar');
     const fill = h('div', 'poll-fill');
     fill.style.width = total ? `${(o.votes / total) * 100}%` : '0%';
     bar.append(fill);
-    li.setAttribute('aria-label', `${o.text}: ${o.votes} oy`);
+    li.setAttribute('aria-label', t('pollVotes', { text: o.text, n: o.votes }));
     li.append(row, bar);
     list.append(li);
   }
   card.append(list);
-  card.append(h('div', 'poll-total', `Toplam ${total.toLocaleString('tr-TR')} oy`));
+  card.append(h('div', 'poll-total', t('pollTotal', { n: total })));
   return card;
 }
