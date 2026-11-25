@@ -40,7 +40,6 @@ const shots = [
   ['landing', '1280,800', `${BASE}?theme=light&landing=1&demo=x`],
   ['chat-light', '1280,800', `${demo}&theme=light&scroll=${encodeURIComponent('Herkes hazır')}`],
   ['chat-dark', '1280,800', `${demo}&theme=dark&scroll=${encodeURIComponent('Kamp listesi')}`],
-  ['media-dark', '1280,800', `${demo}&theme=dark&scroll=${encodeURIComponent('Muhteşem')}`],
   ['search', '1280,800', `${demo}&theme=light&search=kamp`],
   ['lightbox', '1280,800', `${demo}&theme=dark&lightbox=1`],
   // Başsız tarayıcı ~500 pikselden dar pencere açamadığı için mobil görünüm
