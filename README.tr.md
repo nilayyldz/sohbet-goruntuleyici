@@ -146,6 +146,10 @@ tests/          Birim, mock uçtan uca ve güvenlik testleri
 
 Sorun kayıtları (issue) ve pull request'ler memnuniyetle karşılanır. Lütfen **gerçek sohbet dışa aktarımlarını asla ekleme**; `tests/mock/` altındaki sahte veri üreticisini kullan ya da paylaştığın satırları anonimleştir.
 
+## 🙏 Teşekkürler
+
+Bu projenin fikri için **Musa Buğra Demir**'e ([@NightKnight-nx2](https://github.com/NightKnight-nx2)) teşekkürler.
+
 ## 📄 Lisans
 
 [MIT Lisansı](LICENSE) ile yayınlanmıştır.

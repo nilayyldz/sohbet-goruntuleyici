@@ -146,6 +146,10 @@ tests/          Unit, mock round-trip and security tests
 
 Issues and pull requests are welcome. Please **never attach real chat exports** — use the mock generator in `tests/mock/` or anonymize the lines you share.
 
+## 🙏 Acknowledgements
+
+Thanks to **Musa Buğra Demir** ([@NightKnight-nx2](https://github.com/NightKnight-nx2)) for the idea behind this project.
+
 ## 📄 License
 
 Released under the [MIT License](LICENSE).
